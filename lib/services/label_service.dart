@@ -7,6 +7,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:csv/csv.dart';
 import 'package:json_serializable/json_serializable.dart';
 import 'package:services/translate_service.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 
 part 'label_service.g.dart';
 
@@ -134,5 +136,55 @@ class LabelService {
   }
 }
 
-    
-    
+  // New function for exporting labeled numbers
+    Future<void> exportLabeledNumbers({required String directory}) async {
+    try {
+      // 获取标记的电话号码（获取标记的电话号码）
+      final labeledNumbers = await _getLabeledNumbers();
+
+      // 准备 CSV 数据（准备 CSV 数据）
+      final List<List<String>> csvData = [
+        ['Label', 'Phone Number'], // 标题行（标题行）
+        ...labeledNumbers.map((data) => [data['label_name'], data['phone_number']]),
+      ];
+
+      // 选择目录（选择目录）
+      final directoryPath = directory.isEmpty
+          ? await _getDefaultDirectoryPath() // 使用默认目录（使用默认目录）
+          : directory;
+
+      // 创建带有时间戳的文件名（创建带有时间戳的文件名）
+      final filename = 'labeled_numbers_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final filePath = '$directoryPath/$filename';
+
+      // 将 CSV 数据写入文件（将 CSV 数据写入文件）
+      await File(filePath).writeAsString(CsvList.from(csvData).toString());
+
+      // 显示成功消息（显示成功消息）
+      showSuccessSnackBar('Labeled numbers exported successfully to $filePath');
+    } catch (error) {
+      // 显示错误消息（显示错误消息）
+      showErrorSnackBar('Error exporting labeled numbers: $error');
+    }
+  }
+
+  // 获取标记的号码信息（获取标记的号码信息）
+  Future<List<Map<String, dynamic>>> _getLabeledNumbers() async {
+    final sql = '''
+      SELECT l.name AS label_name, cl.phone_number
+      FROM labels l
+      INNER JOIN label_call_log lcl ON l.id = lcl.label_id
+      INNER JOIN call_log cl ON cl.id = lcl.call_log_id
+    ''';
+
+    // 执行 SQL 查询并获取结果（执行 SQL 查询并获取结果）
+    final results = await database.rawQuery(sql);
+    return results.toList();
+  }
+
+  // 获取默认目录路径（获取默认目录路径）
+  Future<String> _getDefaultDirectoryPath() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+}
