@@ -55,13 +55,13 @@ class LabelService {
   }
 
   Future<List<Label>> getLabelsForPhoneNumber(String phoneNumber) async {
-    // 获取通话记录
+    // 获取通话记录Get call logs
     final List<CallLogEntry> callLogEntries = await CallLog.getCallLogs();
 
-    // 获取联系人
+    // 获取联系人Get contact
     final Contact contact = await FlutterContacts.getContact(phoneNumber);
 
-    // 根据号码属性选择预设头像
+    // 根据号码属性选择预设头像Choose avatar based on number attribute
     String avatar;
     switch (phoneNumber) {
       case 'Delivery':
@@ -111,16 +111,16 @@ class LabelService {
       Label(id: '9', name: 'ecommerce', avatar: avatar),
       Label(id: '10', name: 'harassment', avatar: avatar),
      ];
-    // 获取当前语言环境
+    // 获取当前语言环境Get current locale
     final Locale locale = Localizations.localeOf(context);
 
-    // 从语言文件中获取翻译
+    // 从语言文件中获取翻译Translate label names using the translations map
     final String labelText = _translations[locale.languageCode][label.name];
 
-    // 显示标签
+    // 显示标签Show labels
     Text(labelText),
 
-    // 将标签与通话记录关联
+    // 将标签与通话记录关联Associate labels with call logs
     for (final CallLogEntry callLogEntry in callLogEntries) {
       if (callLogEntry.phoneNumber == phoneNumber) {
         for (final Label label in labels) {
@@ -131,7 +131,8 @@ class LabelService {
         }
       }
     }
-
+  }
+}
 
     
     
