@@ -112,14 +112,12 @@ class LabelService {
       Label(id: '9', name: 'ecommerce', avatar: avatar),
       Label(id: '10', name: 'harassment', avatar: avatar),
      ];
-    // 获取当前语言环境Get current locale
-    final Locale locale = Localizations.localeOf(context);
+    // Get translated label names
+      final Locale locale = Localizations.localeOf(context);
+        for (var i = 0; i < labels.length; i++) {
+        labels[i].name = _translations[locale.languageCode][labels[i].name];
+    }
 
-    // 从语言文件中获取翻译Translate label names using the translations map
-    final String labelText = _translations[locale.languageCode][label.name];
-
-    // 显示标签Show labels
-    Text(labelText),
 
     // 将标签与通话记录关联Associate labels with call logs
     for (final CallLogEntry callLogEntry in callLogEntries) {
@@ -132,6 +130,7 @@ class LabelService {
         }
       }
     }
+    return labels;
   }
 }
 
