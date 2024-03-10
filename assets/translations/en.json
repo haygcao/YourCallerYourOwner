@@ -1,0 +1,13 @@
+// assets/translations/en.json
+{
+  "快递": "Delivery",
+  "外卖": "Takeaway",
+  "金融理财": "Financial Management",
+  "保险": "Insurance",
+  "广告": "Advertisement",
+  "疑似诈骗": "Suspected Fraud",
+  "未知": "Unknown",
+  "银行": "Bank",
+  "电商": "E-commerce",
+  "骚扰电话": "Harassment Call"
+}
