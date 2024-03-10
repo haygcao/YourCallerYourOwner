@@ -16,10 +16,10 @@ class LocationService {
     String region = await _getRegionFromCountryCode(countryCode);
 
     // 获取来电号码的省份
-    String province = await _getProvinceFromRegion(region, appLocale);
+    String province = await _getProvinceFromRegion(region, Locale);
 
     // 获取来电号码的运营商
-    String carrier = await _getCarrierFromPhoneNumber(phoneNumber, appLocale);
+    String carrier = await _getCarrierFromPhoneNumber(phoneNumber, Locale);
 
     // 判断来电号码是否为本地号码
     bool isLocalNumber = await _isLocalNumber(phoneNumber);
