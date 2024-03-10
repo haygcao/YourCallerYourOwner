@@ -6,6 +6,7 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:csv/csv.dart';
 import 'package:json_serializable/json_serializable.dart';
+import 'package:services/translate_service.dart';
 
 part 'label_service.g.dart';
 
