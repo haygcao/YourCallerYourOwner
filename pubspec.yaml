@@ -9,3 +9,6 @@ dependencies:
     sdk: flutter
   intl:
     sdk: flutter
+
+  file_picker: ^4.0.0
+  csv: ^4.0.4
