@@ -64,34 +64,34 @@ class LabelService {
     // 根据号码属性选择预设头像
     String avatar;
     switch (phoneNumber) {
-      case '快递':
-        avatar = 'assets/avatars/courier.png';
+      case 'Delivery':
+        avatar = 'assets/avatars/Delivery.png';
         break;
-      case '外卖':
+      case 'takeaway':
         avatar = 'assets/avatars/takeaway.png';
         break;
-      case '金融理财':
+      case 'finance':
         avatar = 'assets/avatars/finance.png';
         break;
-      case '保险':
+      case 'insurance':
         avatar = 'assets/avatars/insurance.png';
         break;
-      case '广告':
+      case 'advertisement':
         avatar = 'assets/avatars/advertisement.png';
         break;
-      case '疑似诈骗':
+      case 'fraud':
         avatar = 'assets/avatars/fraud.png';
         break;
-      case '未知':
+      case 'unknown':
         avatar = 'assets/avatars/unknown.png';
         break;
-      case '银行':
+      case 'bank':
         avatar = 'assets/avatars/bank.png';
         break;
-      case '电商':
+      case 'ecommerce':
         avatar = 'assets/avatars/ecommerce.png';
         break;
-      case '骚扰电话':
+      case 'harassment':
         avatar = 'assets/avatars/harassment.png';
         break;
       default:
@@ -100,12 +100,38 @@ class LabelService {
 
     // 创建标签
     final List<Label> labels = [
-      Label(id: '1', name: '快递', avatar: avatar),
-      Label(id: '2', name: '外卖', avatar: avatar),
-      Label(id: '3', name: '金融理财', avatar: avatar),
-      Label(id: '4', name: '保险', avatar: avatar),
-      Label(id: '5', name: '广告', avatar: avatar),
-      Label(id: '6', name: '疑似诈骗', avatar: avatar),
-      Label(id: '7', name: '未知', avatar: avatar),
-      Label(id: '8', name: '银行', avatar: avatar),
+      Label(id: '1', name: 'Delivery', avatar: avatar),
+      Label(id: '2', name: 'takeaway', avatar: avatar),
+      Label(id: '3', name: 'finance', avatar: avatar),
+      Label(id: '4', name: 'insurance', avatar: avatar),
+      Label(id: '5', name: 'advertisement', avatar: avatar),
+      Label(id: '6', name: 'fraud', avatar: avatar),
+      Label(id: '7', name: 'unknown', avatar: avatar),
+      Label(id: '8', name: 'bank', avatar: avatar),
+      Label(id: '9', name: 'ecommerce', avatar: avatar),
+      Label(id: '10', name: 'harassment', avatar: avatar),
+     ];
+    // 获取当前语言环境
+    final Locale locale = Localizations.localeOf(context);
 
+    // 从语言文件中获取翻译
+    final String labelText = _translations[locale.languageCode][label.name];
+
+    // 显示标签
+    Text(labelText),
+
+    // 将标签与通话记录关联
+    for (final CallLogEntry callLogEntry in callLogEntries) {
+      if (callLogEntry.phoneNumber == phoneNumber) {
+        for (final Label label in labels) {
+          await database.insert('label_call_log', {
+            'label_id': label.id,
+            'call_log_id': callLogEntry.id,
+          });
+        }
+      }
+    }
+
+
+    
+    
