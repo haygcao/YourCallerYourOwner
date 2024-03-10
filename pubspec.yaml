@@ -1,7 +1,7 @@
 dependencies:
-  phone_numbers_parser: ^4.0.0
-  dlibphonenumber: ^2.0.0
-  libphonenumber_flutter: ^2.0.0
+  phone_numbers_parser: ^8.2.1
+  dlibphonenumber: ^1.1.9
+  flutter_libphonenumber: ^2.2.1
 
   flutter:
     sdk: flutter
