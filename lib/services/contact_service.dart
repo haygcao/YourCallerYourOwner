@@ -60,7 +60,7 @@ Future<void> importContacts(String format) async {
     }
   } else {
     // Show error message if no file selected
-    print('No file selected for import');
+    showErrorSnackBar('No file selected for import');
   }
 }
 
@@ -74,6 +74,14 @@ Future<void> _importContactsFromFile(
   } catch (error) {
     // Handle import errors
     print('Import error: $error');
+    // Show error message based on error type
+    if (error is FilePickerError) {
+      showErrorSnackBar('文件选择错误: ${error.message}');
+    } else if (error is FormatException) {
+      showErrorSnackBar('文件格式错误: ${error.message}');
+    } else {
+      showErrorSnackBar('未知错误: $error');
+    }
   }
 }
 
