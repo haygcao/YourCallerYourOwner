@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -36,71 +37,65 @@ class ContactService {
     await database.delete('contacts', where: 'id = ?', whereArgs: [contact.id]);
   }
 
-  Future<void> importContacts(String format, String filePath) async {
-    // Get application documents directory
-    final Directory directory = await getApplicationDocumentsDirectory();
-    final String path = directory.path;
+Future<void> importContacts(String format) async {
+  final FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv', 'vcf', 'json', 'txt']);
 
-    // Import based on format
+  if (result != null) {
+    final String filePath = result.files.single.path!;
     switch (format) {
       case 'csv':
-        await _importCsvContacts(path, filePath);
+        await _importContactsFromFile(_importCsvContacts, path: filePath);
         break;
       case 'vcf':
-        await _importVcfContacts(path, filePath);
+        await _importContactsFromFile(_importVcfContacts, path: filePath);
         break;
       case 'json':
-        await _importJsonContacts(path, filePath);
+        await _importContactsFromFile(_importJsonContacts, path: filePath);
         break;
       case 'txt':
-        await _importTxtContacts(path, filePath);
+        await _importContactsFromFile(_importTxtContacts, path: filePath);
         break;
     }
+  } else {
+    // Show error message if no file selected
+    print('No file selected for import');
   }
+}
 
-  Future<void> exportContacts(String format) async {
-    // Get application documents directory
-    final Directory directory = await getApplicationDocumentsDirectory();
-    final String path = directory.path;
-
-    // Export based on format
-    switch (format) {
-      case 'csv':
-        await _exportCsvContacts(path);
-        break;
-      case 'vcf':
-        await _exportVcfContacts(path);
-        break;
-      case 'json':
-        await _exportJsonContacts(path);
-        break;
-      case 'txt':
-        await _exportTxtContacts(path);
-        break;
-    }
+Future<void> _importContactsFromFile(
+  Future<void> Function(String path, String filePath) importFunction, {
+  required String path,
+  required String filePath,
+}) async {
+  try {
+    await importFunction(path, filePath);
+  } catch (error) {
+    // Handle import errors
+    print('Import error: $error');
   }
+}
 
-  // Implement import/export logic for each format
+Future<void> _importCsvContacts(String path, String filePath) async {
+  final File csvFile = File('$path/$filePath');
+  final List<String> lines = await csvFile.readAsLines();
 
-  Future<void> _importCsvContacts(String path, String filePath) async {
-    final File csvFile = File('$path/$filePath');
-    final List<String> lines = await csvFile.readAsLines();
-
-    // Parse CSV lines and create contacts
-    for (final String line in lines) {
-      final List<String> values = line.split(',');
-      final Contact contact = Contact(
-        id: values[0],
-        name: values[1],
-        phoneNumber: values[2],
-        email: values[3],
-      );
-      await addContact(contact);
-    }
+  // Parse CSV lines and create contacts
+  for (final String line in lines) {
+    final List<String> values = line.split(',');
+    final Contact contact = Contact(
+      id: values[0],
+      name: values[1],
+      phoneNumber: values[2],
+      email: values[3],
+      remark: values[4],
+    );
+    await addContact(contact);
   }
+}
 
-  // TODO: Implement VCF import
-  Future<void> _importVcfContacts(String path, String filePath) async {
+Future<void> _importVcfContacts(String path, String filePath) async {
   final File vcfFile = File('$path/$filePath');
   final String vcfString = await vcfFile.readAsString();
 
@@ -128,10 +123,13 @@ class ContactService {
           case 'EMAIL':
             contact.email = value;
             break;
+          case 'NOTE':
+            contact.remark = value;
+            break;
         }
 
         // Read next line
-        line = lines.next;
+        line = lines[i];
       }
 
       // Add contact to database
@@ -140,8 +138,6 @@ class ContactService {
   }
 }
 
-
-  // TODO: Implement JSON import
 Future<void> _importJsonContacts(String path, String filePath) async {
   final File jsonFile = File('$path/$filePath');
   final String jsonString = await jsonFile.readAsString();
@@ -154,9 +150,7 @@ Future<void> _importJsonContacts(String path, String filePath) async {
   }
 }
 
-
-  // TODO: Implement TXT import
-  Future<void> _importTxtContacts(String path, String filePath) async {
+Future<void> _importTxtContacts(String path, String filePath) async {
   final File txtFile = File('$path/$filePath');
   final String txtString = await txtFile.readAsString();
 
@@ -171,10 +165,10 @@ Future<void> _importJsonContacts(String path, String filePath) async {
       name: values[1],
       phoneNumber: values[2],
       email: values[3],
+      remark: values[4],
     );
     await addContact(contact);
-  }
-}
+
 
 
   Future<void> exportContacts(String format) async {
