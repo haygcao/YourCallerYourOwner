@@ -10,7 +10,7 @@ dependencies:
   intl:
     sdk: flutter
 
-  file_picker: ^4.0.0
+  file_picker: ^4.6.1
   csv: ^4.0.4
 
-  file_picker: ^4.0.0
+
