@@ -6,7 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-
+import 'package:services/snackbar_service.dart';
 
 part 'contact_model.g.dart';
 
@@ -61,7 +61,7 @@ Future<void> importContacts(String format) async {
     }
   } else {
     // Show error message if no file selected
-    showErrorSnackBar('No file selected for import');
+    SnackbarService.showErrorSnackBar('No file selected for import');
   }
 }
 
@@ -77,11 +77,11 @@ Future<void> _importContactsFromFile(
     print('Import error: $error');
     // Show error message based on error type
     if (error is FilePickerError) {
-      showErrorSnackBar('文件选择错误: ${error.message}');
+      SnackbarService.showErrorSnackBar('文件选择错误: ${error.message}');
     } else if (error is FormatException) {
-      showErrorSnackBar('文件格式错误: ${error.message}');
+      SnackbarService.showErrorSnackBar('文件格式错误: ${error.message}');
     } else {
-      showErrorSnackBar('未知错误: $error');
+      SnackbarService.showErrorSnackBar('未知错误: $error');
     }
   }
 }
