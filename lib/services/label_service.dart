@@ -18,11 +18,13 @@ class Label {
   final String id;
   final String name;
   final String avatar;
+  final String label;
 
   Label({
     required this.id,
     required this.name,
     required this.avatar,
+    required this.label,
   });
 
   factory Label.fromJson(Map<String, dynamic> json) => _$LabelFromJson(json);
@@ -65,55 +67,29 @@ class LabelService {
     // 获取联系人Get contact
     final Contact contact = await FlutterContacts.getContact(phoneNumber);
 
-    // 根据号码属性选择预设头像Choose avatar based on number attribute
-    String avatar;
-    switch (phoneNumber) {
-      case 'Delivery':
-        avatar = 'assets/avatars/Delivery.png';
+    // Get labels from database
+    final labels = await getAllLabels();
+
+    // Get avatar and label based on label name 根据号码属性选择预设头像
+    for (final Label label in labels) {
+      if (phoneNumber.contains(label.label)) {
+        label.avatar = 'assets/avatars/${label.label}.png';
         break;
-      case 'takeaway':
-        avatar = 'assets/avatars/takeaway.png';
-        break;
-      case 'finance':
-        avatar = 'assets/avatars/finance.png';
-        break;
-      case 'insurance':
-        avatar = 'assets/avatars/insurance.png';
-        break;
-      case 'advertisement':
-        avatar = 'assets/avatars/advertisement.png';
-        break;
-      case 'fraud':
-        avatar = 'assets/avatars/fraud.png';
-        break;
-      case 'unknown':
-        avatar = 'assets/avatars/unknown.png';
-        break;
-      case 'bank':
-        avatar = 'assets/avatars/bank.png';
-        break;
-      case 'ecommerce':
-        avatar = 'assets/avatars/ecommerce.png';
-        break;
-      case 'harassment':
-        avatar = 'assets/avatars/harassment.png';
-        break;
-      default:
-        avatar = 'assets/avatars/unknown.png';
+      }
     }
 
     // 创建标签
     final List<Label> labels = [
-      Label(id: '1', name: 'Delivery', avatar: avatar),
-      Label(id: '2', name: 'takeaway', avatar: avatar),
-      Label(id: '3', name: 'finance', avatar: avatar),
-      Label(id: '4', name: 'insurance', avatar: avatar),
-      Label(id: '5', name: 'advertisement', avatar: avatar),
-      Label(id: '6', name: 'fraud', avatar: avatar),
-      Label(id: '7', name: 'unknown', avatar: avatar),
-      Label(id: '8', name: 'bank', avatar: avatar),
-      Label(id: '9', name: 'ecommerce', avatar: avatar),
-      Label(id: '10', name: 'harassment', avatar: avatar),
+      Label(id: '1', name: 'Delivery', label: 'Delivery'),
+      Label(id: '2', name: 'Takeaway', label: 'Takeaway'),
+      Label(id: '3', name: 'Finance', label: 'Finance'),
+      Label(id: '4', name: 'Insurance', label: 'Insurance'),
+      Label(id: '5', name: 'Advertisement', label: 'Advertisement'),
+      Label(id: '6', name: 'Fraud', label: 'Fraud'),
+      Label(id: '7', name: 'Unknown', label: 'Unknown'),
+      Label(id: '8', name: 'Bank', label: 'Bank'),
+      Label(id: '9', name: 'Ecommerce', label: 'Ecommerce'),
+      Label(id: '10', name: 'Farassment', label: 'Harassment'),
      ];
     // Get translated label names
       final Locale locale = Localizations.localeOf(context);
@@ -146,7 +122,7 @@ class LabelService {
       // 准备 CSV 数据（准备 CSV 数据）
       final List<List<String>> csvData = [
         ['Label', 'Phone Number'], // 标题行（标题行）
-        ...labeledNumbers.map((data) => [data['label_name'], data['phone_number']]),
+        ...labeledNumbers.map((data) => [data['label_id'], data['phone_number']]),
       ];
 
       // 选择目录（选择目录）
@@ -172,7 +148,7 @@ class LabelService {
   // 获取标记的号码信息（获取标记的号码信息）
   Future<List<Map<String, dynamic>>> _getLabeledNumbers() async {
     final sql = '''
-      SELECT l.name AS label_name, cl.phone_number
+      SELECT l.name AS label_id, cl.phone_number
       FROM labels l
       INNER JOIN label_call_log lcl ON l.id = lcl.label_id
       INNER JOIN call_log cl ON cl.id = lcl.call_log_id
