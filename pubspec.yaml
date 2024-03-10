@@ -1,0 +1,4 @@
+dependencies:
+  phone_numbers_parser: ^4.0.0
+  dlibphonenumber: ^2.0.0
+  libphonenumber_flutter: ^2.0.0
