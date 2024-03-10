@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+
 part 'contact_model.g.dart';
 
 class ContactService {
@@ -191,7 +192,8 @@ Future<void> _importTxtContacts(String path, String filePath) async {
     
   // If no path chosen, use default path
   if (savePath == null) {
-    savePath = '$defaultPath/contacts.$format';
+    savePath = await _getDefaultDirectoryPath(); // 获取默认目录路径
+    savePath += '/contacts.$format';
   }
 
   // Export based on format
