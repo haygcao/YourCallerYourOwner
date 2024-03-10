@@ -8,7 +8,8 @@ import 'package:csv/csv.dart';
 import 'package:json_serializable/json_serializable.dart';
 import 'package:services/translate_service.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart';
+import 'package:services/snackbar_service.dart';
+
 
 part 'label_service.g.dart';
 
@@ -161,10 +162,10 @@ class LabelService {
       await File(filePath).writeAsString(CsvList.from(csvData).toString());
 
       // 显示成功消息（显示成功消息）
-      showSuccessSnackBar('Labeled numbers exported successfully to $filePath');
+      SnackbarService.showSuccessSnackBar('Labeled numbers exported successfully to $filePath');
     } catch (error) {
       // 显示错误消息（显示错误消息）
-      showErrorSnackBar('Error exporting labeled numbers: $error');
+      SnackbarService.showErrorSnackBar('Error exporting labeled numbers: $error');
     }
   }
 
