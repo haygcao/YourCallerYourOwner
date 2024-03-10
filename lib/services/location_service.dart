@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:dlibphonenumber/dlibphonenumber.dart';
-import 'package:libphonenumber_flutter/libphonenumber_flutter.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 
 class LocationService {
   // 获取来电号码的归属地
@@ -16,7 +16,7 @@ class LocationService {
     String region = await _getRegionFromCountryCode(countryCode);
 
     // 获取来电号码的省份
-    String province = await _getProvinceFromRegion(region, Locale);
+    String province = await _getProvinceFromRegion(phoneNumber, Locale);
 
     // 获取来电号码的运营商
     String carrier = await _getCarrierFromPhoneNumber(phoneNumber, Locale);
@@ -35,13 +35,18 @@ class LocationService {
 
   // 从国家代码获取归属地的私有方法
   Future<String> _getRegionFromCountryCode(String countryCode) async {
-    // 使用 dlibphonenumber 库获取归属地
+    // 使用 PhoneNumberUtil 库获取归属地
     PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
-    Phonenumber.PhoneNumber phoneNumber =
-        phoneNumberUtil.parse(phoneNumber, countryCode);
-    return phoneNumberUtil.getRegionCodeForNumber(phoneNumber);
+    try {
+      Phonenumber.PhoneNumber phoneNumber =
+          phoneNumberUtil.parse(phoneNumber, countryCode);
+      return phoneNumberUtil.getRegionCodeForNumber(phoneNumber);
+    } catch (e) {
+      // 处理异常
+      return null;
+    }
   }
-
+  
   // 从归属地获取省份的私有方法
   Future<String> _getProvinceFromRegion(String region, Locale locale) async {
     // 使用 PhoneNumberOfflineGeocoder 库获取省份
