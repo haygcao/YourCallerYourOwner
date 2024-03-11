@@ -195,7 +195,8 @@ Future<void> deleteLabelContactRelation(String contactId) async {
       INNER JOIN call_log cl ON cl.id = lcl.call_log_id
       LEFT JOIN contacts c ON cl.contact_id = c.id
       GROUP BY cl.phoneNumber;
-
+      ''';
+    
     // 执行 SQL 查询并获取结果（执行 SQL 查询并获取结果）
     final results = await database.rawQuery(sql);
     return results.toList();
