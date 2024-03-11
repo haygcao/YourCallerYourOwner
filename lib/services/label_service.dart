@@ -52,28 +52,8 @@ class LabelService {
     return Label.fromJson(maps.first);
   }
 
-  // 添加标签
-  Future<void> addLabel(Label label) async {
-    await database.insert('labels', label.toJson());
-  }
-
-  // 更新标签
-  Future<void> updateLabel(Label label) async {
-    await database.update('labels', label.toJson(), where: 'id = ?', whereArgs: [label.id]);
-  }
-
-  // 删除标签
-  Future<void> deleteLabel(Label label) async {
-    await database.delete('labels', where: 'id = ?', whereArgs: [label.id]);
-  }
-
   // 获取号码的标签
   Future<List<Label>> getLabelsForPhoneNumber(String phoneNumber) async {
-    // 获取通话记录Get call logs
-    final List<CallLogEntry> callLogEntries = await CallLog.getCallLogs();
-
-    // 获取联系人Get contact
-    final Contact contact = await FlutterContacts.getContact(phoneNumber);
 
     // Get labels from database1. 首先从数据库获取所有标签
     final labels = await getAllLabels();
@@ -82,7 +62,12 @@ class LabelService {
     if (labels.isEmpty) {
       await database.batch((batch) => _predefinedLabels.forEach((label) => batch.insert('labels', label.toJson())));
     }
+    // 获取通话记录Get call logs
+    final List<CallLogEntry> callLogEntries = await CallLog.getCallLogs();
 
+    // 获取联系人Get contact
+    final Contact contact = await FlutterContacts.getContact(phoneNumber);
+    
     // 3. 根据号码属性选择预设头像
     for (final Label label in labels) {
       if (phoneNumber.contains(label.label)) {
@@ -97,21 +82,79 @@ class LabelService {
       labels[i].name = _translations[locale.languageCode][labels[i].name];
     }
 
-    // 将标签与通话记录关联Associate labels with call logs
+    // 5. 添加标签与通话记录/联系人的关联关系
     for (final CallLogEntry callLogEntry in callLogEntries) {
       if (callLogEntry.phoneNumber == phoneNumber) {
         for (final Label label in labels) {
-          await database.insert('label_call_log', {
-            'label_id': label.id,
-            'call_log_id': callLogEntry.id,
-          });
+          try {
+            await database.insert('label_call_log', {
+              'label_id': label.id,
+              'call_log_id': callLogEntry.id,
+            });
+          } catch (error) {
+            SnackbarService.showSuccessSnackBar('Error adding label-call log relation: $error');
+          }
         }
       }
     }
+
+    if (contact != null) {
+      for (final Label label in labels) {
+        try {
+          await database.insert('label_contact', {
+            'label_id': label.id,
+            'contact_id': contact.id,
+          });
+        } catch (error) {
+          SnackbarService.showSuccessSnackBar('Error adding label-contact relation: $error');
+        }
+      }
+    }
+
     return labels;
   }
+
+// 添加标签与通话记录的关联关系
+Future<void> addLabelCallLogRelation(String labelId, String callLogId) async {
+  await database.insert('label_call_log', {
+    'label_id': labelId,
+    'call_log_id': callLogId,
+  });
 }
 
+// 更新标签与通话记录的关联关系
+Future<void> updateLabelCallLogRelation(String labelId, String callLogId) async {
+  await database.update('label_call_log', {
+    'label_id': labelId,
+  }, where: 'call_log_id = ?', whereArgs: [callLogId]);
+}
+
+// 删除标签与通话记录的关联关系
+Future<void> deleteLabelCallLogRelation(String callLogId) async {
+  await database.delete('label_call_log', where: 'call_log_id = ?', whereArgs: [callLogId]);
+}
+
+// 添加标签与联系人的关联关系
+Future<void> addLabelContactRelation(String labelId, String contactId) async {
+  await database.insert('label_contact', {
+    'label_id': labelId,
+    'contact_id': contactId,
+  });
+}
+
+// 更新标签与联系人的关联关系
+Future<void> updateLabelContactRelation(String labelId, String contactId) async {
+  await database.update('label_contact', {
+    'label_id': labelId,
+  }, where: 'contact_id = ?', whereArgs: [contactId]);
+}
+
+// 删除标签与联系人的关联关系
+Future<void> deleteLabelContactRelation(String contactId) async {
+  await database.delete('label_contact', where: 'contact_id = ?', whereArgs: [contactId]);
+}
+
+  
   // New function for exporting labeled numbers
     Future<void> exportLabeledNumbers({required String directory}) async {
     try {
