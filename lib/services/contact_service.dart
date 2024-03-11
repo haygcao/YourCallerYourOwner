@@ -98,7 +98,7 @@ Future<void> _importCsvContacts(String path, String filePath) async {
       name: values[1],
       phoneNumber: values[2],
       email: values[3],
-      remark: values[4],
+      label: values[4],
     );
     await addContact(contact);
   }
@@ -133,7 +133,7 @@ Future<void> _importVcfContacts(String path, String filePath) async {
             contact.email = value;
             break;
           case 'NOTE':
-            contact.remark = value;
+            contact.label = value;
             break;
         }
 
@@ -174,7 +174,7 @@ Future<void> _importTxtContacts(String path, String filePath) async {
       name: values[1],
       phoneNumber: values[2],
       email: values[3],
-      remark: values[4],
+      label: values[4],
     );
     await addContact(contact);
 
@@ -228,7 +228,7 @@ Future<void> _exportCsvContacts(String savePath) async {
 
   // Write contact data
   for (final Contact contact in contacts) {
-    csvSink.writeln('${contact.id},${contact.name},${contact.phoneNumber},${contact.email},${contact.remark}');
+    csvSink.writeln('${contact.id},${contact.name},${contact.phoneNumber},${contact.email},${contact.label}');
   }
 
   // Close the sink
