@@ -110,7 +110,6 @@ class LabelService {
         }
       }
     }
-
     return labels;
   }
 
@@ -190,11 +189,11 @@ Future<void> deleteLabelContactRelation(String contactId) async {
   // 获取标记的号码信息（获取标记的号码信息）
   Future<List<Map<String, dynamic>>> _getLabeledNumbers() async {
     final sql = '''
-      SELECT l.label AS label, cl.phone_number
+      SELECT l.label AS label_name, cl.phoneNumber
       FROM labels l
       INNER JOIN label_call_log lcl ON l.id = lcl.label_id
       INNER JOIN call_log cl ON cl.id = lcl.call_log_id
-    ''';
+      GROUP BY cl.phoneNumber;
 
     // 执行 SQL 查询并获取结果（执行 SQL 查询并获取结果）
     final results = await database.rawQuery(sql);
