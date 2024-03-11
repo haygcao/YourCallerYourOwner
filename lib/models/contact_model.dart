@@ -1,19 +1,19 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'contact.g.dart';
+part 'contact_model.g.dart';
 
 @JsonSerializable()
 class Contact {
   final String id;
   final String name;
-  final String phoneNumber;
+  final List<String> phoneNumbers; // 修改为列表
   final String email;
   final String remark;
 
   Contact({
     required this.id,
     required this.name,
-    this.phoneNumber = '',
+    this.phoneNumbers = const [], // 初始化为空列表
     this.email = '',
     this.remark = '',
   });
@@ -22,4 +22,3 @@ class Contact {
 
   Map<String, dynamic> toJson() => _$ContactToJson(this);
 }
-
