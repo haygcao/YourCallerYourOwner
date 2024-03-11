@@ -53,9 +53,41 @@ class Contact {
 
 class ContactService {
   final Database database;
+  late final SubscribeContactsService subscribeContactsService;
 
-  ContactService({required this.database});
+  ContactService({required this.database}) {
+  subscribeContactsService = SubscribeContactsService(subscriptionDao: SubscriptionDao(database: database));
+}
 
+
+// 订阅一个 VCF URL
+Future<void> subscribeToVcfUrl(String vcfUrl) async {
+  final subscription = Subscription(
+    name: name,
+    vcfUrl: vcfUrl,
+    lastUpdated: DateTime.now(),
+    isAutoUpdate: true, // 是否自动更新
+    interval: 15, // 自动更新间隔（分钟）
+  );
+  await subscribeContactsService.insert(subscription);
+}
+
+// 手动更新订阅
+Future<void> manuallyUpdateSubscription(Subscription subscription) async {
+  await subscribeContactsService.manuallyUpdateSubscription(subscription);
+}
+
+// 删除订阅
+Future<void> deleteSubscription(Subscription subscription) async {
+  await subscribeContactsService.deleteSubscription(subscription);
+}
+
+// 启动所有订阅的定期更新
+void startPeriodicUpdates() {
+  subscribeContactsService.startPeriodicUpdates();
+}
+
+  
   Future<List<Contact>> getAllContacts() async {
     final List<Map<String, dynamic>> maps = await database.query('contacts');
     return List.generate(maps.length, (i) => Contact.fromJson(maps[i]));
