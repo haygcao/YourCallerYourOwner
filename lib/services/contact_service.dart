@@ -63,12 +63,32 @@ class ContactService {
 
 // 订阅一个 VCF URL
 Future<void> subscribeToVcfUrl(String vcfUrl) async {
+  // 获取用户输入的订阅名称
+  final subscriptionName = await showDialog<String>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Subscription Name'),
+      content: TextField(),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, controller.text),
+          child: Text('Sure'),
+        ),
+      ],
+    ),
+  );
+
+  // 创建新的订阅
   final subscription = Subscription(
-    name: name,
+    name: subscriptionName,
     vcfUrl: vcfUrl,
     lastUpdated: DateTime.now(),
-    isAutoUpdate: true, // 是否自动更新
-    interval: 15, // 自动更新间隔（分钟）
+    isAutoUpdate: true,
+    interval: 15,
   );
   await subscribeContactsService.insert(subscription);
 }
@@ -87,7 +107,6 @@ Future<void> deleteSubscription(Subscription subscription) async {
 void startPeriodicUpdates() {
   subscribeContactsService.startPeriodicUpdates();
 }
-
   
   Future<List<Contact>> getAllContacts() async {
     final List<Map<String, dynamic>> maps = await database.query('contacts');
