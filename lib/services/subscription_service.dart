@@ -18,6 +18,11 @@ part 'subscription_model.g.dart';
 
 class SubscriptionService {
 
+   late final List<Subscription> _whitelist = [];
+   late final List<Subscription> _blacklist = [];
+   late final List<Subscription> _subscriptions = [];
+   late Timer _autoUpdateTimer;
+ 
  // 从本地文件导入订阅数据
 
  Future<List<Subscription>> importSubscriptionsFromFile(String filePath) async {
@@ -174,7 +179,50 @@ class SubscriptionService {
 
  }
 
+  // 手动更新订阅数据
+  void updateSubscriptions() async {
+    // 实现手动更新逻辑
+    List<Subscription> subscriptions = await _getSubscriptionsFromSource();
 
+    // 更新本地数据
+    _subscriptions.clear();
+    _subscriptions.addAll(subscriptions);
+  }
+
+  // 删除订阅
+  void deleteSubscription(Subscription subscription) {
+    // 从本地数据中删除订阅
+    _subscriptions.remove(subscription);
+  }
+
+
+
+  // 启动自动更新
+  void startAutoUpdate() {
+    // 定期执行更新任务
+    _autoUpdateTimer = Timer.periodic(Duration(hours: 1), (timer) async {
+      // 仅当通过网络连接导入数据时触发自动更新
+      if (_isImportingFromUrl) {
+        await updateSubscriptions();
+      }
+    });
+  }
+
+
+
+  // 停止自动更新
+  void stopAutoUpdate() {
+    // 取消定时任务
+    _autoUpdateTimer.cancel();
+  }
+
+
+
+  // 添加订阅名称
+  void addSubscriptionName(Subscription subscription, String name) {
+    // 将名称添加到订阅中
+    subscription.name = name;
+  }
 
  // 从 CSV 文件导入订阅数据的私有方法
 
