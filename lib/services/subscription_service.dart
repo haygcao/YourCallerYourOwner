@@ -9,8 +9,8 @@ import 'package:http/http.dart';
 import 'package:hive/hive.dart';
 
 import 'package:provider/provider.dart';
-
-
+import 'package:models/subscription_model.dart';
+import 'package:services/snackbar_service.dart';
 
 part 'subscription_model.g.dart';
 
@@ -109,80 +109,51 @@ class SubscriptionService {
 
  // 管理订阅白名单和黑名单
 
- void addSubscriptionToWhitelist(Subscription subscription) {
+void addSubscriptionToWhitelist(Subscription subscription) {
+  // 将订阅添加到白名单，并避免重复添加
+  if (!_whitelist.contains(subscription)) {
+    _whitelist.add(subscription);
+  }
+}
 
-  // 将订阅添加到白名单
-
-  _whitelist.add(subscription);
-
- }
-
-
-
- void removeSubscriptionFromWhitelist(Subscription subscription) {
-
+void removeSubscriptionFromWhitelist(Subscription subscription) {
   // 将订阅从白名单中删除
-
   _whitelist.remove(subscription);
+}
 
- }
+void addSubscriptionToBlacklist(Subscription subscription) {
+  // 将订阅添加到黑名单，并避免重复添加
+  if (!_blacklist.contains(subscription)) {
+    _blacklist.add(subscription);
+  }
+}
 
-
-
- void addSubscriptionToBlacklist(Subscription subscription) {
-
-  // 将订阅添加到黑名单
-
-  _blacklist.add(subscription);
-
- }
-
-
-
- void removeSubscriptionFromBlacklist(Subscription subscription) {
-
-  // 将订阅从黑名单中删除
-
-  _blacklist.remove(subscription);
-
- }
-
-
+  void removeSubscriptionFromBlacklist(Subscription subscription) {
+    // 将订阅从黑名单中删除
+    _blacklist.remove(subscription);
+  }
 
  // 根据订阅规则处理来电
 
- bool shouldAcceptCall(String phoneNumber) {
-
+bool shouldAcceptCall(String phoneNumber) {
   // 检查号码是否在白名单中
-
-  if (_whitelist.contains(phoneNumber)) {
-
-   return true;
-
+  if (_whitelist.isNotEmpty && _whitelist.contains(phoneNumber)) {
+    return true;
   }
-
-
 
   // 检查号码是否在黑名单中
-
-  if (_blacklist.contains(phoneNumber)) {
-
-   return false;
-
+  if (_blacklist.isNotEmpty && _blacklist.contains(phoneNumber)) {
+    return false;
   }
 
-
-
   // 允许所有来电
-
   return true;
-
- }
+}
 
   // 手动更新订阅数据
   void updateSubscriptions() async {
     // 实现手动更新逻辑
-    List<Subscription> subscriptions = await _getSubscriptionsFromSource();
+    List<Subscription> subscriptions = await _getSubscriptions();
 
     // 更新本地数据
     _subscriptions.clear();
@@ -192,7 +163,13 @@ class SubscriptionService {
   // 删除订阅
   void deleteSubscription(Subscription subscription) {
     // 从本地数据中删除订阅
-    _subscriptions.remove(subscription);
+    if (_subscriptions.remove(subscription)) {
+      // 显示成功消息
+      SnackbarService.showSuccessSnackBar('Subscription deleted successfully');
+    } else {
+      // 显示错误消息
+      SnackbarService.showErrorSnackBar('Subscription not found');
+    }
   }
 
 
