@@ -49,26 +49,27 @@ class SubscriptionService {
 
  // 从 GitHub 连接等远程 URL 导入订阅数据
 
- Future<List<Subscription>> importSubscriptionsFromUrl(String url) async {
+  Future<List<Subscription>> importSubscriptionsFromUrl(String url) async {
 
-  // 从 URL 获取数据
+    try {
+      // 从 URL 获取数据
+      String data = await _getDataFromUrl(url);
 
-  String data = await _getDataFromUrl(url);
+      // 解析数据
+      List<Subscription> subscriptions = _parseData(data);
 
+      // 返回订阅数据
+      return subscriptions;
+    } catch (e) {
+      // 显示错误消息
+      if (e is Exception && e.message == 'URL not found') {
+        SnackbarService.showErrorSnackBar('URL not found');
+      } else {
+        rethrow;
+      }
+    }
 
-
-  // 解析数据
-
-  List<Subscription> subscriptions = _parseData(data);
-
-
-
-  // 返回订阅数据
-
-  return subscriptions;
-
- }
-
+  }
 
 
  // 导出订阅数据为 CSV 文件
