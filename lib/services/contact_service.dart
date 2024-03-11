@@ -1,12 +1,17 @@
-import 'dart:async';
+import 'package:http/http.dart'import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:services/snackbar_service.dart';
+import 'package:http/http.dart';
+import 'services/subscribe_contacts_service.dart';
+import 'models/subscribe_contacts_model.dart';
+import 'models/contact_model.dart';
 
 part 'contact_model.g.dart';
 
@@ -92,7 +97,59 @@ class ContactService {
     await file.copy(newPath);
     return newPath;
   }
-  
+
+  // Add the importContactsFromUrl function within the class
+  Future<void> importContactsFromUrl(String vcfUrl) async {
+    try {
+      final response = await get(Uri.parse(vcfUrl));
+      if (response.statusCode == 200) {
+        final String vcfString = response.body;
+        await _importVcfContacts('', vcfString); // Assuming path is not required for downloaded content
+        SnackbarService.showSuccessSnackBar('Contacts imported successfully from URL!');
+      } else {
+        SnackbarService.showErrorSnackBar('Error downloading VCF: ${response.statusCode}');
+      }
+    } catch (error) {
+      SnackbarService.showErrorSnackBar('Error importing contacts from URL: $error');
+    }
+  }
+
+  // Add a function to show a dialog for entering the VCF URL
+  Future<void> showImportFromUrlDialog() async {
+    final TextEditingController controller = TextEditingController();
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Import Contacts from URL'),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(labelText: 'Enter VCF URL'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final vcfUrl = controller.text;
+              await importContactsFromUrl(vcfUrl);
+              Navigator.pop(context);
+            },
+            child: Text('Import'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Add a function to handle the import button click
+  Future<void> onImportButtonClick() async {
+    // Show a dialog to enter the VCF URL
+    await showImportFromUrlDialog();
+  }
+}  
+
 Future<void> importContacts(String format) async {
   final FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
