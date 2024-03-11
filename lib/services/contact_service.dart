@@ -6,9 +6,45 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:services/snackbar_service.dart';
+
 
 part 'contact_model.g.dart';
+
+class Contact {
+  final String id;
+  final String？ name;
+  final String phoneNumber;
+  final String? email;
+  final String? label;
+  String? avatarPath; // 新增属性
+
+  Contact({
+    required this.id,
+    required this.name,
+    this.phoneNumber,
+    this.email,
+    this.label,
+    this.avatarPath,
+  });
+
+  factory Contact.fromJson(Map<String, dynamic> json) => Contact(
+    id: json['id'],
+    name: json['name'],
+    phoneNumber: json['phone_number'],
+    email: json['email'],
+    label: json['label'],
+    avatarPath: json['avatarPath'],
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'phone_number': phoneNumber,
+    'email': email,
+    'label': label,
+    'avatarPath': avatarPath,
+  };
+}
 
 class ContactService {
   final Database database;
@@ -38,6 +74,25 @@ class ContactService {
     await database.delete('contacts', where: 'id = ?', whereArgs: [contact.id]);
   }
 
+    Future<void> chooseAvatarAndSave(Contact contact) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final path = await saveFile(pickedFile.path);
+      contact.avatarPath = path;
+      await updateContact(contact);
+    }
+  }
+
+  Future<String> saveFile(String filePath) async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    final newPath = '<span class="math-inline">\{appDocDir\.path\}/</span>{basename(filePath)}';
+    final file = File(filePath);
+    await file.copy(newPath);
+    return newPath;
+  }
+  
 Future<void> importContacts(String format) async {
   final FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -134,6 +189,16 @@ Future<void> _importVcfContacts(String path, String filePath) async {
             break;
           case 'NOTE':
             contact.label = value;
+            break;
+          case 'PHOTO;ENCODING=BASE64;TYPE=JPEG:':
+            final base64Data = line.split(':')[1];
+            final bytes = base64Decode(base64Data);
+            final appDocDir = await getApplicationDocumentsDirectory();
+            final fileName = '${basename(contact.id)}.jpg';
+            final filePath = '${appDocDir.path}/$fileName';
+            final file = File(filePath);
+            await file.writeAsBytes(bytes);
+            contact.avatarPath = filePath;
             break;
         }
 
@@ -235,5 +300,45 @@ Future<void> _exportCsvContacts(String savePath) async {
   csvSink.close();
 }
 
+  Future<void> _exportVcfContacts(String savePath) async {
+  final List<Contact> contacts = await getAllContacts();
+  final File vcfFile = File(savePath);
+  final vcfSink = vcfFile.openWrite();
+
+  for (final Contact contact in contacts) {
+    // ... 写入 VCF 头信息
+    vcfSink.writeln('BEGIN:VCARD');
+    vcfSink.writeln('VERSION:3.0');
+    vcfSink.writeln('N:${contact.name}'); // 新增 name
+    vcfSink.writeln('FN:${contact.name}'); // 新增 name
+    vcfSink.writeln('LABEL:${contact.label}'); // 新增 label
+    
+    // 写入联系人基本信息
+    vcfSink.writeln('TEL;TYPE=CELL:${contact.phoneNumber}');
+    vcfSink.writeln('EMAIL;TYPE=HOME:${contact.email}');
+
+    // 写入头像（如果存在）
+    if (contact.avatarPath != null) {
+      vcfSink.writeln('PHOTO;ENCODING=BASE64;TYPE=JPEG:${base64Encode(File(contact.avatarPath!).readAsBytesSync())}');
+    }
+
+    // 写入 VCF 尾信息
+    vcfSink.writeln('END:VCARD');
+  }
+  vcfSink.close();
+}
+
+Future<void> _exportJsonContacts(String savePath) async {
+  final List<Contact> contacts = await getAllContacts();
+  final File jsonFile = File(savePath);
+  final jsonSink = jsonFile.openWrite();
+
+  // 将所有联系人转换为 JSON 数组
+  final json = jsonEncode(contacts.map((contact) => contact.toJson()).toList());
+
+  // 写入文件
+  jsonSink.write(json);
+  jsonSink.close();
+}
     
 
