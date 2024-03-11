@@ -9,16 +9,17 @@ import 'package:json_serializable/json_serializable.dart';
 import 'package:services/translate_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:services/snackbar_service.dart';
+import 'package:utils/predefined_labels.dart';
 
 
 part 'label_service.g.dart';
 
 @JsonSerializable()
 class Label {
-  final String id;
-  final String name;
-  final String avatar;
-  final String label;
+  final String id; // 标签 ID
+  final String name; // 标签名称
+  final String avatar; // 标签头像
+  final String label; // 标签文本内容
 
   Label({
     required this.id,
@@ -32,34 +33,41 @@ class Label {
   Map<String, dynamic> toJson() => _$LabelToJson(this);
 }
 
+// 数据库实例
 class LabelService {
   final Database database;
 
   LabelService({required this.database});
 
+  // 获取所有标签
   Future<List<Label>> getAllLabels() async {
     final List<Map<String, dynamic>> maps = await database.query('labels');
     return List.generate(maps.length, (i) => Label.fromJson(maps[i]));
   }
-
+  
+  // 获取标签 by ID
   Future<Label> getLabelById(String id) async {
     final List<Map<String, dynamic>> maps =
         await database.query('labels', where: 'id = ?', whereArgs: [id]);
     return Label.fromJson(maps.first);
   }
 
+  // 添加标签
   Future<void> addLabel(Label label) async {
     await database.insert('labels', label.toJson());
   }
 
+  // 更新标签
   Future<void> updateLabel(Label label) async {
     await database.update('labels', label.toJson(), where: 'id = ?', whereArgs: [label.id]);
   }
 
+  // 删除标签
   Future<void> deleteLabel(Label label) async {
     await database.delete('labels', where: 'id = ?', whereArgs: [label.id]);
   }
 
+  // 获取号码的标签
   Future<List<Label>> getLabelsForPhoneNumber(String phoneNumber) async {
     // 获取通话记录Get call logs
     final List<CallLogEntry> callLogEntries = await CallLog.getCallLogs();
@@ -67,10 +75,15 @@ class LabelService {
     // 获取联系人Get contact
     final Contact contact = await FlutterContacts.getContact(phoneNumber);
 
-    // Get labels from database
+    // Get labels from database1. 首先从数据库获取所有标签
     final labels = await getAllLabels();
 
-    // Get avatar and label based on label name 根据号码属性选择预设头像
+    // 2. 如果数据库中没有标签，则创建预设标签
+    if (labels.isEmpty) {
+      await database.batch((batch) => _predefinedLabels.forEach((label) => batch.insert('labels', label.toJson())));
+    }
+
+    // 3. 根据号码属性选择预设头像
     for (final Label label in labels) {
       if (phoneNumber.contains(label.label)) {
         label.avatar = 'assets/avatars/${label.label}.png';
@@ -78,25 +91,11 @@ class LabelService {
       }
     }
 
-    // 创建标签
-    final List<Label> labels = [
-      Label(id: '1', name: 'Delivery', label: 'Delivery'),
-      Label(id: '2', name: 'Takeaway', label: 'Takeaway'),
-      Label(id: '3', name: 'Finance', label: 'Finance'),
-      Label(id: '4', name: 'Insurance', label: 'Insurance'),
-      Label(id: '5', name: 'Advertisement', label: 'Advertisement'),
-      Label(id: '6', name: 'Fraud', label: 'Fraud'),
-      Label(id: '7', name: 'Unknown', label: 'Unknown'),
-      Label(id: '8', name: 'Bank', label: 'Bank'),
-      Label(id: '9', name: 'Ecommerce', label: 'Ecommerce'),
-      Label(id: '10', name: 'Farassment', label: 'Harassment'),
-     ];
-    // Get translated label names
-      final Locale locale = Localizations.localeOf(context);
-        for (var i = 0; i < labels.length; i++) {
-        labels[i].name = _translations[locale.languageCode][labels[i].name];
+    // 4. 翻译标签名称
+    final Locale locale = Localizations.localeOf(context);
+    for (var i = 0; i < labels.length; i++) {
+      labels[i].name = _translations[locale.languageCode][labels[i].name];
     }
-
 
     // 将标签与通话记录关联Associate labels with call logs
     for (final CallLogEntry callLogEntry in callLogEntries) {
@@ -122,7 +121,7 @@ class LabelService {
       // 准备 CSV 数据（准备 CSV 数据）
       final List<List<String>> csvData = [
         ['Label', 'Phone Number'], // 标题行（标题行）
-        ...labeledNumbers.map((data) => [data['label_id'], data['phone_number']]),
+        ...labeledNumbers.map((data) => [data['label'], data['phoneNumber']]),
       ];
 
       // 选择目录（选择目录）
@@ -148,7 +147,7 @@ class LabelService {
   // 获取标记的号码信息（获取标记的号码信息）
   Future<List<Map<String, dynamic>>> _getLabeledNumbers() async {
     final sql = '''
-      SELECT l.name AS label_id, cl.phone_number
+      SELECT l.label AS label, cl.phone_number
       FROM labels l
       INNER JOIN label_call_log lcl ON l.id = lcl.label_id
       INNER JOIN call_log cl ON cl.id = lcl.call_log_id
