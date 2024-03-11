@@ -224,7 +224,7 @@ Future<void> _exportCsvContacts(String savePath) async {
   final csvSink = csvFile.openWrite();
 
   // Write headers
-  csvSink.writeln('id,name,phone_number,email,remark');
+  csvSink.writeln('id,name,phone_number,email,label');
 
   // Write contact data
   for (final Contact contact in contacts) {
