@@ -6,7 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-
+import 'package:services/snackbar_service.dart';
 
 part 'contact_model.g.dart';
 
@@ -113,6 +113,12 @@ Future<void> importContacts(String format) async {
       case 'txt':
         await _importContactsFromFile(_importTxtContacts, path: filePath);
         break;
+    }
+      SnackbarService.showSuccessSnackBar('Contacts imported successfully!');
+    } catch (error) {
+      // Handle import errors
+      print('Import error: $error');
+      SnackbarService.showErrorSnackBar('Error importing contacts: $error');
     }
   } else {
     // Show error message if no file selected
@@ -243,8 +249,6 @@ Future<void> _importTxtContacts(String path, String filePath) async {
     );
     await addContact(contact);
 
-
-
   Future<void> exportContacts(String format) async {
   // Get application documents directory
   final Directory directory = await getApplicationDocumentsDirectory();
@@ -275,6 +279,13 @@ Future<void> _importTxtContacts(String path, String filePath) async {
     case 'txt':
       await _exportTxtContacts(savePath);
       break;
+  }
+  try {
+    SnackbarService.showSuccessSnackBar('Contacts exported successfully to $savePath');
+  } catch (error) {
+    // Handle export errors
+    print('Export error: $error');
+    SnackbarService.showErrorSnackBar('Error exporting contacts: $error');
   }
 }
 
