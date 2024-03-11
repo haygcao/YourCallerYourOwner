@@ -285,6 +285,8 @@ Future<void> _importVcfContacts(String path, String filePath) async {
   for (final String line in lines) {
     if (line.startsWith('BEGIN:VCARD')) {
       final Contact contact = Contact();
+      String contactId = ''; // 存储 vCard 中的唯一标识符
+      List<String> phoneNumbers = []; // 存储多个电话号码
 
       // Parse VCF properties
       while (!line.startsWith('END:VCARD')) {
@@ -293,11 +295,14 @@ Future<void> _importVcfContacts(String path, String filePath) async {
         final String value = parts[1].trim();
 
         switch (property) {
+          case 'UID': // 假设 vCard 中使用 UID 作为唯一标识符
+            contactId = value;
+            break;          
           case 'FN':
             contact.name = value;
             break;
           case 'TEL':
-            contact.phoneNumber = value;
+            phoneNumbers.add(value); // 添加电话号码到列表中
             break;
           case 'EMAIL':
             contact.email = value;
@@ -321,11 +326,26 @@ Future<void> _importVcfContacts(String path, String filePath) async {
         line = lines[i];
       }
 
-      // Add contact to database
-      await addContact(contact);
+      // 设置联系人的电话号码列表
+      contact.phoneNumbers = phoneNumbers;
+
+      // 检查联系人是否已经存在
+      final existingContact = await getContactById(contactId);
+      if (existingContact == null) {
+        // 联系人不存在，可以添加 Add contact to database
+        await addContact(contact);
+      } else {
+        // 联系人已存在，可以选择更新现有联系人信息
+        // ... 更新代码
+        existingContact.name = contact.name; // 更新姓名
+        existingContact.phoneNumbers = phoneNumbers; // 更新电话号码列表
+        existingContact.email = contact.email; // 更新邮箱
+        await updateContact(existingContact);
+      }
     }
   }
 }
+
 
 Future<void> _importJsonContacts(String path, String filePath) async {
   final File jsonFile = File('$path/$filePath');
