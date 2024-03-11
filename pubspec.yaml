@@ -34,3 +34,5 @@ dev_dependencies:
   json_serializable_generator: ^4.5.0
 dependencies:
   json_annotation: ^4.5.0
+dependencies:
+  floor: ^1.4.3
