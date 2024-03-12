@@ -38,3 +38,5 @@ dependencies:
   floor: ^1.4.3
 dependencies:
   flutter_secure_storage: ^4.2.0
+dependencies:
+  android_intent: ^0.6.0
