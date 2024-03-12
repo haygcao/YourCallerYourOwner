@@ -11,6 +11,7 @@ import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:models/subscription_model.dart';
 import 'package:services/snackbar_service.dart';
+import 'package:utils/get_default_external_dir.dart';
 
 part 'subscription_model.g.dart';
 
