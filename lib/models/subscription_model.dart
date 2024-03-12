@@ -1,81 +1,94 @@
-// models/subscription_entity.dart
-
 part of 'subscription_service.dart';
 
-import 'package:floor/floor.dart';
+import 'package:sqflite/sqflite.dart';
 
-// 定义数据库实体
-@entity
-class SubscriptionEntity {
-  @primaryKey
+class SubscriptionModel {
   final int id;
-
   final String name;
-
   final String number;
-
   final bool enabled;
-
   final bool isWhitelist;
-
   final bool isBlacklist;
 
-  SubscriptionEntity(
-      this.id,
-      this.name,
-      this.number,
-      this.enabled,
-      this.isWhitelist,
-      this.isBlacklist);
+  SubscriptionModel({
+    required this.id,
+    required this.name,
+    required this.number,
+    required this.enabled,
+    required this.isWhitelist,
+    required this.isBlacklist,
+  });
+
+  factory SubscriptionModel.fromJson(Map<String, dynamic> json) =>
+      _$SubscriptionModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SubscriptionModelToJson(this);
 }
 
-// 定义数据库
-@database
-class AppDatabase {
-  // 定义数据库版本
-  static const int version = 100;
+// 数据库实例
+class SubscriptionService {
+  final Database database;
 
-  // 定义数据库中的表
-  @dao
-  SubscriptionEntityDao get subscriptionEntityDao;
-}
+  SubscriptionService({required this.database});
 
-// 定义数据访问对象
-@dao
-abstract class SubscriptionEntityDao {
+  // 获取所有订阅
+  Future<List<SubscriptionModel>> getAllSubscriptions() async {
+    final List<Map<String, dynamic>> maps = await database.query('subscriptions');
+    return List.generate(maps.length,
+        (i) => SubscriptionModel.fromJson(maps[i]));
+  }
+
   // 插入订阅
-  @insert
-  Future<void> insertSubscriptionEntity(SubscriptionEntity subscriptionEntity);
-
-  // 查询所有订阅
-  @query
-  Future<List<SubscriptionEntity>> getAllSubscriptionEntities();
+  Future<void> insertSubscription(SubscriptionModel subscription) async {
+    await database.insert('subscriptions', subscription.toJson());
+  }
 
   // 根据 ID 查询订阅
-  @query
-  Future<SubscriptionEntity> getSubscriptionEntityById(int id);
+  Future<SubscriptionModel> getSubscriptionById(int id) async {
+    final List<Map<String, dynamic>> maps =
+        await database.query('subscriptions', where: 'id = ?', whereArgs: [id]);
+    return SubscriptionModel.fromJson(maps.first);
+  }
 
   // 更新订阅
-  @update
-  Future<void> updateSubscriptionEntity(SubscriptionEntity subscriptionEntity);
+  Future<void> updateSubscription(SubscriptionModel subscription) async {
+    await database.update('subscriptions', subscription.toJson(),
+        where: 'id = ?', whereArgs: [subscription.id]);
+  }
 
   // 删除订阅
-  @delete
-  Future<void> deleteSubscriptionEntity(SubscriptionEntity subscriptionEntity);
+  Future<void> deleteSubscription(SubscriptionModel subscription) async {
+    await database.delete('subscriptions', where: 'id = ?', whereArgs: [subscription.id]);
+  }
 
   // 查询白名单订阅
-  @query
-  Future<List<SubscriptionEntity>> getWhitelistSubscriptionEntities();
+  Future<List<SubscriptionModel>> getWhitelistSubscriptions() async {
+    final List<Map<String, dynamic>> maps = await database
+        .query('subscriptions', where: 'is_whitelist = ?', whereArgs: [true]);
+    return List.generate(maps.length,
+        (i) => SubscriptionModel.fromJson(maps[i]));
+  }
 
   // 查询黑名单订阅
-  @query
-  Future<List<SubscriptionEntity>> getBlacklistSubscriptionEntities();
+  Future<List<SubscriptionModel>> getBlacklistSubscriptions() async {
+    final List<Map<String, dynamic>> maps = await database
+        .query('subscriptions', where: 'is_blacklist = ?', whereArgs: [true]);
+    return List.generate(maps.length,
+        (i) => SubscriptionModel.fromJson(maps[i]));
+  }
 
   // 根据号码查询订阅
-  @query
-  Future<SubscriptionEntity> getSubscriptionEntityByNumber(String number);
+  Future<SubscriptionModel> getSubscriptionByNumber(String number) async {
+    final List<Map<String, dynamic>> maps = await database
+        .query('subscriptions', where: 'number = ?', whereArgs: [number]);
+    return SubscriptionModel.fromJson(maps.first);
+  }
 
   // 根据是否启用查询订阅
-  @query
-  Future<List<SubscriptionEntity>> getSubscriptionEntitiesByEnabled(bool enabled);
+  Future<List<SubscriptionModel>> getSubscriptionsByEnabled(bool enabled) async {
+    final List<Map<String, dynamic>> maps = await database
+        .query('subscriptions', where: 'enabled = ?', whereArgs: [enabled]);
+    return List.generate(maps.length,
+        (i) => SubscriptionModel.fromJson(maps[i]));
+  }
 }
