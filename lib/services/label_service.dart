@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:call_log/call_log.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -10,7 +12,8 @@ import 'package:services/translate_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:services/snackbar_service.dart';
 import 'package:utils/predefined_labels.dart';
-
+import 'package:utils/get_default_external_dir.dart';
+import 'package:file_picker/file_picker.dart';
 
 part 'label_service.g.dart';
 
@@ -154,39 +157,27 @@ Future<void> deleteLabelContactRelation(String contactId) async {
 }
 
   
-  // New function for exporting labeled numbers
+  // New function for exporting labeled numbers 导出标记号码
     Future<void> exportLabeledNumbers({required String directory}) async {
     try {
-      // 获取标记的电话号码（获取标记的电话号码）
-      final labeledNumbers = await _getLabeledNumbers();
+  // 选择目录
+  String? directoryPath = await pickDirectory();
 
-      // 准备 CSV 数据（准备 CSV 数据）
-      final List<List<String>> csvData = [
-        ['Label', 'Phone Number'], // 标题行（标题行）
-        ...labeledNumbers.map((data) => [data['label'], data['phoneNumber']]),
-      ];
-
-      // 选择目录（选择目录）
-      final directoryPath = directory.isEmpty
-          ? await _getDefaultDirectoryPath() // 使用默认目录（使用默认目录）
-          : directory;
-
-      // 创建带有时间戳的文件名（创建带有时间戳的文件名）
-      final filename = 'labeled_numbers_${DateTime.now().millisecondsSinceEpoch}.csv';
-      final filePath = '$directoryPath/$filename';
-
-      // 将 CSV 数据写入文件（将 CSV 数据写入文件）
-      await File(filePath).writeAsString(CsvList.from(csvData).toString());
-
-      // 显示成功消息（显示成功消息）
-      SnackbarService.showSuccessSnackBar('Labeled numbers exported successfully to $filePath');
-    } catch (error) {
-      // 显示错误消息（显示错误消息）
-      SnackbarService.showErrorSnackBar('Error exporting labeled numbers: $error');
-    }
+  // 如果用户没有选择目录，则使用默认目录
+  if (directoryPath == null) {
+    directoryPath = await _getDefaultExternalStorageDirectory();
   }
 
-  // 获取标记的号码信息（获取标记的号码信息）
+  // Do something with the directory path.
+  print(directoryPath);
+
+  // 显示成功提示
+  showSuccessSnackBar(
+    message: '目录选择成功！',
+  );
+}
+
+      // 获取标记的号码信息（获取标记的号码信息）
   Future<List<Map<String, dynamic>>> _getLabeledNumbers() async {
     final sql = '''
       SELECT l.label AS label_name, cl.phoneNumber, c.id AS contact_id
@@ -201,10 +192,27 @@ Future<void> deleteLabelContactRelation(String contactId) async {
     final results = await database.rawQuery(sql);
     return results.toList();
   }
+      // 获取标记的电话号码（获取标记的电话号码）
+      final labeledNumbers = await _getLabeledNumbers();
 
-  // 获取默认目录路径（获取默认目录路径）
-  Future<String> _getDefaultDirectoryPath() async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
+      // 准备 CSV 数据（准备 CSV 数据）
+      final List<List<String>> csvData = [
+        ['Label', 'Phone Number'], // 标题行（标题行）
+        ...labeledNumbers.map((data) => [data['label'], data['phoneNumber']]),
+      ];
+      // 创建带有时间戳的文件名（创建带有时间戳的文件名）
+      final filename = 'labeled_numbers_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final filePath = '$directoryPath/$filename';
+
+      // 将 CSV 数据写入文件（将 CSV 数据写入文件）
+      await File(filePath).writeAsString(CsvList.from(csvData).toString());
+
+      // 显示成功消息（显示成功消息）
+      showSuccessSnackBar('Labeled numbers exported successfully to $filePath');
+    } catch (error) {
+      // 显示错误消息（显示错误消息）
+      showErrorSnackBar('Error exporting labeled numbers: $error');
+    }
   }
-}
+
+
