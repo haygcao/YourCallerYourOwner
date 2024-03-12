@@ -11,11 +11,12 @@ import 'package:sqflite/sqflite.dart';
 import 'package:services/snackbar_service.dart';
 import 'package:http/http.dart';
 import 'package:services/snackbar_service.dart';
-import 'package:utils/get_default_external_dir.dart';
+
 import 'services/subscribe_contacts_service.dart';
 import 'models/subscribe_contacts_model.dart';
 import 'models/contact_model.dart';
-
+import 'package:utils/get_default_external_dir.dart';
+import 'package:utils/image_crop.dart';
 part 'contact_model.g.dart';
 
 class Contact {
@@ -133,24 +134,41 @@ void startPeriodicUpdates() {
     await database.delete('contacts', where: 'id = ?', whereArgs: [contact.id]);
   }
 
-    Future<void> chooseAvatarAndSave(Contact contact) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  // 更新头像
+Future<void> chooseAvatarAndSave(Contact contact) async {
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      final path = await saveFile(pickedFile.path);
-      contact.avatarPath = path;
-      await updateContact(contact);
+  if (pickedFile != null) {
+    // 获取应用外部存储目录
+    final appExternalDir = await getExternalStorageDirectory();
+    // 选择保存目录
+    String? directoryPath = await pickDirectory(
+      initialDirectory: appExternalDir.path,
+    );
+
+    // 如果用户没有选择目录，则使用默认目录
+    if (directoryPath == null) {
+      directoryPath = appExternalDir.path;
     }
-  }
 
-  Future<String> saveFile(String filePath) async {
-    final appDocDir = await getApplicationDocumentsDirectory();
-    final newPath = '<span class="math-inline">\{appDocDir\.path\}/</span>{basename(filePath)}';
-    final file = File(filePath);
-    await file.copy(newPath);
-    return newPath;
+    // 读取图片
+    final image = await decodeImageFromPath(pickedFile.path);
+
+    // 裁剪图片
+    final croppedImage = await cropImage(image, Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()));
+    // 生成新的文件名
+    final newFileName = '${basename(pickedFile.path)}-${DateTime.now().millisecondsSinceEpoch}';
+    // 保存文件
+    final newPath = await File(pickedFile.path).copy('$directoryPath/$newFileName');
+
+    contact.avatarPath = newPath;
+    await updateContact(contact);
   }
+}
+
+
+
 
   // Add the importContactsFromUrl function within the class
   Future<void> importContactsFromUrl(String vcfUrl) async {
@@ -381,20 +399,19 @@ Future<void> _importTxtContacts(String path, String filePath) async {
     await addContact(contact);
 
   Future<void> exportContacts(String format) async {
-  // Get application documents directory
-  final Directory directory = await getApplicationDocumentsDirectory();
-  final String path = directory.path;
+  // Get  documents directory选择目录
+  String? directoryPath = await pickDirectory();
+  
 
-  // Show file picker and get save path
-  final String savePath = await FilePicker.getSavePath(
-    fileName: 'contacts.$format',
-  );
-    
-  // If no path chosen, use default path
-  if (savePath == null) {
-    savePath = await _getDefaultDirectoryPath(); // 获取默认目录路径
-    savePath += '/contacts.$format';
+  //  If no path chosen, use default path如果用户没有选择目录，则使用默认目录
+  if (directoryPath == null) {
+    directoryPath = await _getDefaultExternalStorageDirectory();
   }
+    
+  //生成文件名
+  final String fileName = 'contacts.$format';
+  // 生成文件路径
+  final String savePath = '$directoryPath/$fileName';
 
   // Export based on format
   switch (format) {
@@ -412,11 +429,11 @@ Future<void> _importTxtContacts(String path, String filePath) async {
       break;
   }
   try {
-    SnackbarService.showSuccessSnackBar('Contacts exported successfully to $savePath');
+    showSuccessSnackBar('Contacts exported successfully to $savePath');
   } catch (error) {
     // Handle export errors
     print('Export error: $error');
-    SnackbarService.showErrorSnackBar('Error exporting contacts: $error');
+    showErrorSnackBar('Error exporting contacts: $error');
   }
 }
 
