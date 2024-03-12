@@ -36,3 +36,5 @@ dependencies:
   json_annotation: ^4.5.0
 dependencies:
   floor: ^1.4.3
+dependencies:
+  flutter_secure_storage: ^4.2.0
