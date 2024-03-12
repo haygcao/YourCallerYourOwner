@@ -4,24 +4,30 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webdav_client/webdav_client.dart';
+import 'secure_storage.dart';
 
 class WebDavService {
-  WebDavService({
-    required this.url,
-    required this.username,
-    required this.password,
-  }) {
+  final SecureStorage secureStorage;
+  final String url;
+  final String username;
+  final String password;
+
+  WebDavService(this.secureStorage) {
+    _initCredentials();
+  }
+
+  Future<void> _initCredentials() async {
+    url = await secureStorage.read(SecureStorage._urlKey) ?? '';
+    username = await secureStorage.read(SecureStorage._usernameKey) ?? '';
+    password = await secureStorage.read(SecureStorage._passwordKey) ?? '';
     _client = WebDavClient(
       url: url,
       username: username,
       password: password,
     );
   }
-
-  final String url;
-  final String username;
-  final String password;
 
   late WebDavClient _client;
 
