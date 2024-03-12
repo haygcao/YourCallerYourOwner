@@ -1,10 +1,53 @@
 import 'package:sqflite/sqflite.dart';
+
+class LocationDatabase {
+  static final String _databaseName = "location.db";
+  static final int _databaseVersion = 1;
+
+  Database _database;
+
+  Future<void> open() async {
+    _database = await openDatabase(_databaseName, _databaseVersion,
+        onCreate: (db, version) async {
+      await db.execute("""
+        CREATE TABLE location (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          region TEXT NOT NULL,
+          province TEXT NOT NULL,
+          carrier TEXT NOT NULL,
+          is_local_number INTEGER NOT NULL,
+          phone_number TEXT NOT NULL
+        )
+      """);
+    });
+  }
+
+  Future<void> close() async {
+    await _database.close();
+  }
+
+  Future<LocationData> insertLocation(LocationData location) async {
+    await _database.insert("location", location.toMap());
+    return location;
+  }
+
+  Future<List<LocationData>> getAllLocations() async {
+    final List<Map<String, dynamic>> maps = await _database.query("location");
+    return maps.map((map) => LocationData.fromMap(map)).toList();
+  }
+
+  Future<void> deleteLocation(int id) async {
+    await _database.delete("location", where: "id = ?", whereArgs: [id]);
+  }
+}
+
 class LocationData {
   final int id;
   final String region;
   final String province;
   final String carrier;
   final bool isLocalNumber;
+  final String phoneNumber;
 
   LocationData({
     this.id,
@@ -12,71 +55,27 @@ class LocationData {
     required this.province,
     required this.carrier,
     required this.isLocalNumber,
+    required this.phoneNumber,
   });
-
-  factory LocationData.fromMap(Map<String, dynamic> map) {
-    return LocationData(
-      id: map['id'],
-      region: map['region'],
-      province: map['province'],
-      carrier: map['carrier'],
-      isLocalNumber: map['isLocalNumber'],
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'region': region,
-      'province': province,
-      'carrier': carrier,
-      'isLocalNumber': isLocalNumber,
+      "region": region,
+      "province": province,
+      "carrier": carrier,
+      "is_local_number": isLocalNumber ? 1 : 0,
+      "phone_number": phoneNumber,
     };
   }
-}
-class DatabaseHelper {
-  static final _databaseName = "location.db";
-  static final _databaseVersion = 1;
 
-  Database _database;
-
-  DatabaseHelper._privateConstructor();
-
-  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
-
-  Future<Database> get database async {
-    if (_database != null) return _database;
-    _database = await _initDatabase();
-    return _database;
-  }
-
-  _initDatabase() async {
-    var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, _databaseName);
-    return await openDatabase(path,
-        version: _databaseVersion,
-        onCreate: (db, version) async {
-          await db.execute('''
-          CREATE TABLE location (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            region TEXT NOT NULL,
-            province TEXT NOT NULL,
-            carrier TEXT NOT NULL,
-            isLocalNumber INTEGER NOT NULL
-          )
-          ''');
-        });
-  }
-
-  Future<int> insertLocation(LocationData location) async {
-    Database db = await database;
-    return await db.insert('location', location.toMap());
-  }
-
-  Future<List<LocationData>> getAllLocations() async {
-    Database db = await database;
-    List<Map<String, dynamic>> maps = await db.query('location');
-    return maps.map((map) => LocationData.fromMap(map)).toList();
+  static LocationData fromMap(Map<String, dynamic> map) {
+    return LocationData(
+      id: map["id"],
+      region: map["region"],
+      province: map["province"],
+      carrier: map["carrier"],
+      isLocalNumber: map["is_local_number"] == 1,
+      phoneNumber: map["phone_number"],
+    );
   }
 }
-
