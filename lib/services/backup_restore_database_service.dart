@@ -19,17 +19,7 @@ class BackupRestoreService {
   /// 备份用户数据
   Future<void> backup() async {
 
-    // 选择备份路径
-    final backupDirectory = await showDirectoryPicker(
-      context: context,
-      initialDirectory: databaseFile.parent.path,
-    );
 
-    // 如果用户取消了选择，则使用默认目录
-    //if (backupDirectory == null) {
-      //backupDirectory = await _getDefaultExternalStorageDirectory();
-      //showSuccessSnackBar('存储到默认位置');
-    //}
 
     // 获取数据库文件
     final databaseFile = File(databasePath);
@@ -56,7 +46,19 @@ class BackupRestoreService {
     final deviceName = getDeviceName(); 
     // 生成备份文件名
     final backupFileName = '${deviceName}_${DateTime.now().millisecondsSinceEpoch}.zip';
+   
+    // 选择备份路径
+    final backupDirectory = await showDirectoryPicker(
+      context: context,
+      initialDirectory: databaseFile.parent.path,
+    );
 
+    // 如果用户取消了选择，则使用默认目录
+    //if (backupDirectory == null) {
+      //backupDirectory = await _getDefaultExternalStorageDirectory();
+      //showSuccessSnackBar('存储到默认位置');
+    //}
+    
     // 复制 ZIP 文件到备份目录
     try {
     await zipFile.copy(join(backupDirectory.path, backupFileName));
