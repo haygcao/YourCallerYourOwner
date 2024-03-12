@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:archive/archive.dart';
 import 'package:services/snackbar_service.dart';
 import 'package:services/backup_restore_database_service.dart';
 import 'package:services/auto_backup_service.dart';
