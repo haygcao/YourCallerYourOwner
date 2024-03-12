@@ -8,7 +8,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:services/snackbar_service.dart';
 import 'package:services/backup_restore_database_service.dart';
-import 'package:services/backup_restore_database_service.dart';
+import 'package:services/auto_backup_service.dart';
 import 'package:services/webdav_service.dart';
 import 'package:utils/get_default_external_dir.dart';
 
@@ -62,7 +62,27 @@ class OnlineBackupService {
   /// 设置自动本地备份仅保留最新备份开关
   void setAutoLocalBackupKeepOnlyLatest(bool keepOnlyLatest) {
     _backupRestoreService.setAutoLocalBackupKeepOnlyLatest(keepOnlyLatest);
+  if (keepOnlyLatest) {
+    // 删除之前的备份文件
+    _deleteOldBackups();
   }
+}
+
+Future<void> _deleteOldBackups() async {
+  // 获取本地备份目录
+  final backupDirectory = await _getDefaultExternalStorageDirectory();
+
+  // 列出所有备份文件
+  final backupFiles = await backupDirectory.list().where((file) => file.path.endsWith('.zip')).toList();
+
+  // 根据创建时间排序
+  backupFiles.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
+
+  // 删除除最新备份文件以外的所有旧备份文件
+  for (final backupFile in backupFiles.sublist(1)) {
+    await backupFile.delete();
+  }
+}
 
   /// 获取自动本地备份仅保留最新备份开关状态
   bool isAutoLocalBackupKeepOnlyLatest() {
@@ -100,20 +120,4 @@ class OnlineBackupService {
   }
 }
 
-/// 自动备份服务
-class AutoBackupService {
-  final SharedPreferences _sharedPreferences;
 
-  AutoBackupService(this._sharedPreferences);
-
-  /// 开启自动备份
-  void startAutoBackup(Function backupFunction) {
-    final lastBackupTime = _sharedPreferences.getInt('lastBackupTime') ?? 0;
-    final nextBackupTime = lastBackupTime + (24 * 60 * 60 * 1000); // 每天备份一次
-    final timer = Timer(Duration(milliseconds: nextBackupTime - DateTime.now().millisecondsSinceEpoch), () async {
-      try {
-        backupFunction();
-        _sharedPreferences.setInt('lastBackupTime', DateTime.now().millisecondsSinceEpoch);
-        startAutoBackup(backupFunction);
-      } catch (error) {
-        print('
