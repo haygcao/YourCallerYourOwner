@@ -5,6 +5,15 @@ import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:models/location_data.dart';
 
 class LocationService {
+  class LocationService {
+  final PhoneNumberUtil _phoneNumberUtil;
+  final PhoneNumberOfflineGeocoder _geocoder;
+  final PhoneNumberToCarrierMapper _carrierMapper;
+
+  LocationService()
+      : _phoneNumberUtil = getIt<PhoneNumberUtil>(),
+        _geocoder = getIt<PhoneNumberOfflineGeocoder>(),
+        _carrierMapper = getIt<PhoneNumberToCarrierMapper>();
   // 获取来电号码的归属地
   Future<LocationData> getCallerLocation(String phoneNumber) async {
     // 解析来电号码
@@ -81,11 +90,13 @@ class LocationData {
   final String province;
   final String carrier;
   final bool isLocalNumber;
+  final String phoneNumber;
 
   LocationData({
     required this.region,
     required this.province,
     required this.carrier,
     required this.isLocalNumber,
+    required this.phoneNumber,
   });
 }
