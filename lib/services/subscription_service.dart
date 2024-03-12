@@ -1,29 +1,129 @@
 import 'package:flutter/foundation.dart';
-
+import 'dart:async';
 import 'package:csv/csv.dart';
+import 'package:path/path.dart';
 
 import 'package:json_serializable/json_serializable.dart';
 
 import 'package:http/http.dart';
 
-import 'package:hive/hive.dart';
-
+import 'package:sqflite/sqflite.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:models/subscription_model.dart';
+
 import 'package:services/snackbar_service.dart';
 import 'package:utils/get_default_external_dir.dart';
+import 'package:models/subscription_model.dart';
 
 part 'subscription_model.g.dart';
 
 
 
-class SubscriptionService {
 
-   late final List<Subscription> _whitelist = [];
-   late final List<Subscription> _blacklist = [];
-   late final List<Subscription> _subscriptions = [];
-   late Timer _autoUpdateTimer;
- 
+  SubscriptionService({required this.database});
+  // 数据库实例
+  class SubscriptionService {
+  // 数据库实例
+  final Database database;
+  // 白名单订阅
+  late final List<Subscription> _whitelist = [];
+  // 黑名单订阅
+  late final List<Subscription> _blacklist = [];
+  // 所有订阅
+  late final List<Subscription> _subscriptions = [];
+  // 自动更新计时器
+  late Timer _autoUpdateTimer;
+     SubscriptionService({required Database database}) : _database = database {
+    // 初始化订阅数据
+    _initSubscriptions();
+  }
+
+     // 获取所有订阅
+  Future<List<SubscriptionModel>> getAllSubscriptions() async {
+    final List<Map<String, dynamic>> maps = await database.query('subscriptions');
+    return List.generate(maps.length,
+        (i) => SubscriptionModel.fromJson(maps[i]));
+  }
+
+  // 插入订阅
+  Future<void> insertSubscription(SubscriptionModel subscription) async {
+    await database.insert('subscriptions', subscription.toJson());
+  }
+
+  // 根据 ID 查询订阅
+  Future<SubscriptionModel> getSubscriptionById(int id) async {
+    final List<Map<String, dynamic>> maps =
+        await database.query('subscriptions', where: 'id = ?', whereArgs: [id]);
+    return SubscriptionModel.fromJson(maps.first);
+  }
+
+  // 更新订阅
+  Future<void> updateSubscription(SubscriptionModel subscription) async {
+    await database.update('subscriptions', subscription.toJson(),
+        where: 'id = ?', whereArgs: [subscription.id]);
+  }
+
+  // 删除订阅
+  Future<void> deleteSubscription(SubscriptionModel subscription) async {
+    await database.delete('subscriptions', where: 'id = ?', whereArgs: [subscription.id]);
+  }
+
+  // 查询白名单订阅
+  Future<List<SubscriptionModel>> getWhitelistSubscriptions() async {
+    final List<Map<String, dynamic>> maps = await database
+        .query('subscriptions', where: 'is_whitelist = ?', whereArgs: [true]);
+    return List.generate(maps.length,
+        (i) => SubscriptionModel.fromJson(maps[i]));
+  }
+
+  // 查询黑名单订阅
+  Future<List<SubscriptionModel>> getBlacklistSubscriptions() async {
+    final List<Map<String, dynamic>> maps = await database
+        .query('subscriptions', where: 'is_blacklist = ?', whereArgs: [true]);
+    return List.generate(maps.length,
+        (i) => SubscriptionModel.fromJson(maps[i]));
+  }
+
+  // 根据号码查询订阅
+  Future<SubscriptionModel> getSubscriptionByNumber(String number) async {
+    final List<Map<String, dynamic>> maps = await database
+        .query('subscriptions', where: 'number = ?', whereArgs: [number]);
+    return SubscriptionModel.fromJson(maps.first);
+  }
+
+  // 根据是否启用查询订阅
+  Future<List<SubscriptionModel>> getSubscriptionsByEnabled(bool enabled) async {
+    final List<Map<String, dynamic>> maps = await database
+        .query('subscriptions', where: 'enabled = ?', whereArgs: [enabled]);
+    return List.generate(maps.length,
+        (i) => SubscriptionModel.fromJson(maps[i]));
+  }
+}
+ // 管理订阅白名单和黑名单
+
+void addSubscriptionToWhitelist(Subscription subscription) {
+  // 将订阅添加到白名单，并避免重复添加
+  if (!_whitelist.contains(subscription)) {
+    _whitelist.add(subscription);
+  }
+}
+
+void removeSubscriptionFromWhitelist(Subscription subscription) {
+  // 将订阅从白名单中删除
+  _whitelist.remove(subscription);
+}
+
+void addSubscriptionToBlacklist(Subscription subscription) {
+  // 将订阅添加到黑名单，并避免重复添加
+  if (!_blacklist.contains(subscription)) {
+    _blacklist.add(subscription);
+  }
+}
+
+  void removeSubscriptionFromBlacklist(Subscription subscription) {
+    // 将订阅从黑名单中删除
+    _blacklist.remove(subscription);
+  }
  // 从本地文件导入订阅数据
 
  Future<List<Subscription>> importSubscriptionsFromFile(String filePath) async {
@@ -41,7 +141,8 @@ class SubscriptionService {
   } else {
 
    throw Exception('Invalid file format');
-
+         // 显示错误消息
+   showErrorSnackBar('Invalid file format');
   }
 
  }
@@ -58,13 +159,17 @@ class SubscriptionService {
 
       // 解析数据
       List<Subscription> subscriptions = _parseData(data);
-
+       
+      // 更新本地数据
+      _subscriptions.clear();
+      _subscriptions.addAll(subscriptions);
+       
       // 返回订阅数据
       return subscriptions;
     } catch (e) {
       // 显示错误消息
       if (e is Exception && e.message == 'URL not found') {
-        SnackbarService.showErrorSnackBar('URL not found');
+        showErrorSnackBar('URL not found');
       } else {
         rethrow;
       }
@@ -72,6 +177,74 @@ class SubscriptionService {
 
   }
 
+  // 添加订阅名称
+  void addSubscriptionName(Subscription subscription, String name) {
+    // 将名称添加到订阅中
+    subscription.name = name;
+  }
+
+
+
+
+ // 根据订阅规则处理来电
+
+bool shouldAcceptCall(String phoneNumber) {
+  // 检查号码是否在白名单中
+  if (_whitelist.isNotEmpty && _whitelist.contains(phoneNumber)) {
+    return true;
+  }
+
+  // 检查号码是否在黑名单中
+  if (_blacklist.isNotEmpty && _blacklist.contains(phoneNumber)) {
+    return false;
+  }
+
+  // 允许所有来电
+  return true;
+}
+
+   // 手动更新订阅数据
+  void updateSubscriptions() async {
+    // 实现手动更新逻辑
+    List<Subscription> subscriptions = await _getSubscriptions();
+
+    // 更新本地数据
+    _subscriptions.clear();
+    _subscriptions.addAll(subscriptions);
+  }
+
+  // 删除订阅
+  void deleteSubscription(Subscription subscription) {
+    // 从本地数据中删除订阅
+    if (_subscriptions.remove(subscription)) {
+      // 显示成功消息
+      SnackbarService.showSuccessSnackBar('Subscription deleted successfully');
+    } else {
+      // 显示错误消息
+      showErrorSnackBar('Subscription not found');
+    }
+  }
+
+
+
+  // 启动自动更新
+  void startAutoUpdate() {
+    // 定期执行更新任务
+    _autoUpdateTimer = Timer.periodic(Duration(hours: 1), (timer) async {
+      // 仅当通过网络连接导入数据时触发自动更新
+      if (_isImportingFromUrl) {
+        await updateSubscriptions();
+      }
+    });
+  }
+
+
+
+  // 停止自动更新
+  void stopAutoUpdate() {
+    // 取消定时任务
+    _autoUpdateTimer.cancel();
+  }
 
  // 导出订阅数据为 CSV 文件
 
@@ -107,101 +280,6 @@ class SubscriptionService {
 
  }
 
-
-
- // 管理订阅白名单和黑名单
-
-void addSubscriptionToWhitelist(Subscription subscription) {
-  // 将订阅添加到白名单，并避免重复添加
-  if (!_whitelist.contains(subscription)) {
-    _whitelist.add(subscription);
-  }
-}
-
-void removeSubscriptionFromWhitelist(Subscription subscription) {
-  // 将订阅从白名单中删除
-  _whitelist.remove(subscription);
-}
-
-void addSubscriptionToBlacklist(Subscription subscription) {
-  // 将订阅添加到黑名单，并避免重复添加
-  if (!_blacklist.contains(subscription)) {
-    _blacklist.add(subscription);
-  }
-}
-
-  void removeSubscriptionFromBlacklist(Subscription subscription) {
-    // 将订阅从黑名单中删除
-    _blacklist.remove(subscription);
-  }
-
- // 根据订阅规则处理来电
-
-bool shouldAcceptCall(String phoneNumber) {
-  // 检查号码是否在白名单中
-  if (_whitelist.isNotEmpty && _whitelist.contains(phoneNumber)) {
-    return true;
-  }
-
-  // 检查号码是否在黑名单中
-  if (_blacklist.isNotEmpty && _blacklist.contains(phoneNumber)) {
-    return false;
-  }
-
-  // 允许所有来电
-  return true;
-}
-
-  // 手动更新订阅数据
-  void updateSubscriptions() async {
-    // 实现手动更新逻辑
-    List<Subscription> subscriptions = await _getSubscriptions();
-
-    // 更新本地数据
-    _subscriptions.clear();
-    _subscriptions.addAll(subscriptions);
-  }
-
-  // 删除订阅
-  void deleteSubscription(Subscription subscription) {
-    // 从本地数据中删除订阅
-    if (_subscriptions.remove(subscription)) {
-      // 显示成功消息
-      SnackbarService.showSuccessSnackBar('Subscription deleted successfully');
-    } else {
-      // 显示错误消息
-      SnackbarService.showErrorSnackBar('Subscription not found');
-    }
-  }
-
-
-
-  // 启动自动更新
-  void startAutoUpdate() {
-    // 定期执行更新任务
-    _autoUpdateTimer = Timer.periodic(Duration(hours: 1), (timer) async {
-      // 仅当通过网络连接导入数据时触发自动更新
-      if (_isImportingFromUrl) {
-        await updateSubscriptions();
-      }
-    });
-  }
-
-
-
-  // 停止自动更新
-  void stopAutoUpdate() {
-    // 取消定时任务
-    _autoUpdateTimer.cancel();
-  }
-
-
-
-  // 添加订阅名称
-  void addSubscriptionName(Subscription subscription, String name) {
-    // 将名称添加到订阅中
-    subscription.name = name;
-  }
 
  // 从 CSV 文件导入订阅数据的私有方法
 
