@@ -126,7 +126,15 @@ void addSubscriptionToBlacklist(Subscription subscription) {
   }
  // 从本地文件导入订阅数据
 
- Future<List<Subscription>> importSubscriptionsFromFile(String filePath) async {
+Future<List<Subscription>> importSubscriptionsFromFile() async {
+  // 使用文件选择器选择文件
+  final FilePickerResult? result = await FilePicker.platform.pickFiles(
+    type: FileType.any,
+  );
+
+  // 检查用户是否选择了文件
+  if (result != null && result.files.single != null) {
+    final String filePath = result.files.single.path;
 
   // 根据文件类型解析数据
 
@@ -143,9 +151,12 @@ void addSubscriptionToBlacklist(Subscription subscription) {
    throw Exception('Invalid file format');
          // 显示错误消息
    showErrorSnackBar('Invalid file format');
+    }
+  } else {
+    // 用户未选择文件
+    return [];
   }
-
- }
+}
 
 
 
@@ -246,6 +257,57 @@ bool shouldAcceptCall(String phoneNumber) {
     _autoUpdateTimer.cancel();
   }
 
+void exportSubscriptions(List<Subscription> subscriptions) async {
+  // 选择目录
+  String? directoryPath = await pickDirectory();
+
+  // 如果用户没有选择目录，则使用默认目录
+  if (directoryPath == null) {
+    directoryPath = await _getDefaultExternalStorageDirectory();
+  }
+
+  // 选择导出格式
+  String? type = await showDialog<String>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('选择导出格式'),
+      content: Text('请选择要导出的文件格式'),
+      actions: <Widget>[
+        TextButton(
+          child: Text('CSV'),
+          onPressed: () => Navigator.pop(context, 'csv'),
+        ),
+        TextButton(
+          child: Text('JSON'),
+          onPressed: () => Navigator.pop(context, 'json'),
+        ),
+      ],
+    ),
+  );
+
+  // 如果用户没有选择导出格式，则取消导出
+  if (type == null) {
+    return;
+  }
+
+  // 生成文件名
+  String fileName = 'subscriptions.$type';
+
+  // 生成文件路径
+  String filePath = '$directoryPath/$fileName';
+
+  // 导出数据
+  if (type == 'csv') {
+    exportSubscriptionsToCsv(subscriptions, filePath);
+  } else if (type == 'json') {
+    exportSubscriptionsToJson(subscriptions, filePath);
+  }
+
+  // 显示成功提示
+  showSuccessSnackBar(
+    message: '导出成功！',
+  );
+}
  // 导出订阅数据为 CSV 文件
 
  void exportSubscriptionsToCsv(List<Subscription> subscriptions, String filePath) {
