@@ -67,36 +67,6 @@ class BackupRestoreService {
     showErrorSnackBar('Error backing up data: $error');
   }
 
-  /// 获取上次备份时间
-  Future<int> getLastBackupTime() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    return sharedPreferences.getInt('lastBackupTime') ?? 0;
-  }
-
-  /// 定时备份
-  void startAutoBackup() async {
-    // 获取上次备份时间
-    final lastBackupTime = await getLastBackupTime();
-
-    // 计算下次备份时间
-    final nextBackupTime = lastBackupTime + (24 * 60 * 60 * 1000); // 每天备份一次
-
-    // 创建计时器
-    final timer = Timer(Duration(milliseconds: nextBackupTime - DateTime.now().millisecondsSinceEpoch), () async {
-      // 执行备份操作
-      await backup();
-
-      // 更新上次备份时间
-      final sharedPreferences = await SharedPreferences.getInstance();
-      sharedPreferences.setInt('lastBackupTime', DateTime.now().millisecondsSinceEpoch);
-
-      // 重新启动计时器
-      startAutoBackup();
-    });
-
-    // 销毁计时器
-    timer.dispose();
-  }
 }
 
 
