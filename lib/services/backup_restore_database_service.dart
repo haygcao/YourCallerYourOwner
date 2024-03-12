@@ -26,10 +26,10 @@ class BackupRestoreService {
     );
 
     // 如果用户取消了选择，则使用默认目录
-    if (backupDirectory == null) {
-      backupDirectory = await _getDefaultExternalStorageDirectory();
-      showSuccessSnackBar('存储到默认位置');
-    }
+    //if (backupDirectory == null) {
+      //backupDirectory = await _getDefaultExternalStorageDirectory();
+      //showSuccessSnackBar('存储到默认位置');
+    //}
 
     // 获取数据库文件
     final databaseFile = File(databasePath);
@@ -79,10 +79,10 @@ class BackupRestoreService {
     );
 
     // 如果用户取消了选择，则使用默认目录
-    if (backupDirectory == null) {
-      backupDirectory = await _getDefaultExternalStorageDirectory();
-      showSuccessSnackBar('存储到默认位置');
-    }
+    //if (backupDirectory == null) {
+      //backupDirectory = await _getDefaultExternalStorageDirectory();
+      //showSuccessSnackBar('存储到默认位置');
+    //}
 
       // 列出所有备份文件
   final backupFiles = await backupDirectory.list().where((file) => file.path.endsWith('.zip')).toList();
