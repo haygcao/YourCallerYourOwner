@@ -27,7 +27,10 @@ class CallerIdService {
         return CallerIdData(
           phoneNumber: phoneNumber,
           countryCode: countryCode,
-          locationData: locationData,
+          region: locationData?.region,
+          carrier: locationData?.carrier,
+          numberType: locationData?.numberType,
+          isLocalNumber: locationData?.isLocalNumber,
         );
       }
     }
@@ -40,11 +43,17 @@ class CallerIdService {
 class CallerIdData {
   final String phoneNumber;
   final String countryCode;
-  final LocationData? locationData;
+  final String? region;
+  final String? carrier;
+  final PhoneNumberType? numberType;
+  final bool? isLocalNumber;
 
   CallerIdData({
     required this.phoneNumber,
     required this.countryCode,
-    this.locationData,
+    this.region,
+    this.carrier,
+    this.numberType,
+    this.isLocalNumber,
   });
 }
