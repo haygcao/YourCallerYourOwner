@@ -10,7 +10,7 @@ import 'package:http/http.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
-
+import 'package:services/blacklist_whitelist_service.dart';
 import 'package:services/snackbar_service.dart';
 import 'package:utils/get_default_external_dir.dart';
 import 'package:models/subscription_model.dart';
@@ -194,6 +194,29 @@ Future<List<Subscription>> importSubscriptionsFromFile() async {
     subscription.name = name;
   }
 
+    Future<void> importSubscriptions(List<Subscription> subscriptions) async {
+   
+    // 将订阅的号码添加到黑白名单
+    for (Subscription subscription in subscriptions) {
+      if (subscription.isBlacklist) {
+        BlacklistService.instance.add(BlacklistEntry(
+          avatar: subscription.avatar,
+          label: subscription.label,
+          phoneNumber: subscription.phoneNumber,
+          name: subscription.name,
+          isSubscribed: true,
+        ));
+      } else if (subscription.isWhitelist) {
+        WhitelistService.instance.add(WhitelistEntry(
+          avatar: subscription.avatar,
+          label: subscription.label,
+          phoneNumber: subscription.phoneNumber,
+          name: subscription.name,
+          isSubscribed: true,
+        ));
+      }
+    }
+  }
 
 
 
