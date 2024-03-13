@@ -4,6 +4,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:dlibphonenumber/dlibphonenumber.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:models/location_data.dart';
 import 'package:services/location_service.dart'; // 引入 location_service.dart
 import 'package:models/label_data.dart';
@@ -14,6 +15,10 @@ import 'package:models/subscription_model.dart';
 import 'package:services/subscription_service.dart';
 import 'package:models/blacklist_whitelist_data.dart';
 import 'package:services/blacklist_whitelist_service.dart';
+
+final _callerIdSubject = BehaviorSubject<CallerIdData>(); // 创建来电信息流
+
+Stream<CallerIdData> get callerIdStream => _callerIdSubject.stream;
 
 class CallerIdData {
   final String phoneNumber;
