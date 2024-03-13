@@ -32,10 +32,12 @@ class WhitelistEntry {
   });
 }
 class BlacklistService {
-  final List<BlacklistEntry> _entries = [];
+  final Database database;
 
-  void add(BlacklistEntry entry) {
-    _entries.add(entry);
+  BlacklistService(this.database);
+
+  Future<void> add(BlacklistEntry entry) async {
+    await database.insert('blacklist', entry.toJson());
   }
 
   void remove(BlacklistEntry entry) {
