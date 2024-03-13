@@ -13,9 +13,10 @@ class LocationDatabase {
         CREATE TABLE location (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           region TEXT NOT NULL,
-          province TEXT NOT NULL,
-          carrier TEXT NOT NULL,
-          is_local_number INTEGER NOT NULL,
+          countryCode TEXT,
+          carrier TEXT,
+          numberType TEXT,
+          isLocalNumber INTEGER NOT NULL,
           phone_number TEXT NOT NULL
         )
       """);
@@ -44,16 +45,18 @@ class LocationDatabase {
 class LocationData {
   final int id;
   final String region;
-  final String province;
+  final String countryCode;
   final String carrier;
+  final String numberType;
   final bool isLocalNumber;
   final String phoneNumber;
 
   LocationData({
     this.id,
     required this.region,
-    required this.province,
+    this.countryCode,
     required this.carrier,
+    this.numberType,
     required this.isLocalNumber,
     required this.phoneNumber,
   });
@@ -61,8 +64,9 @@ class LocationData {
   Map<String, dynamic> toMap() {
     return {
       "region": region,
-      "province": province,
+      "countryCode": countryCode,
       "carrier": carrier,
+      "numberType": numberType,
       "is_local_number": isLocalNumber ? 1 : 0,
       "phone_number": phoneNumber,
     };
@@ -72,8 +76,9 @@ class LocationData {
     return LocationData(
       id: map["id"],
       region: map["region"],
-      province: map["province"],
+      countryCode: map["countryCode"],
       carrier: map["carrier"],
+      numberType: map["numberType"],
       isLocalNumber: map["is_local_number"] == 1,
       phoneNumber: map["phone_number"],
     );
