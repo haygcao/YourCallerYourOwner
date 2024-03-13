@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 class SubscriptionModel {
   final int id;
   final String name;
-  final String number;
+  final String phoneNumber;
   final bool enabled;
   final bool isWhitelist;
   final bool isBlacklist;
@@ -12,7 +12,7 @@ class SubscriptionModel {
   SubscriptionModel({
     required this.id,
     required this.name,
-    required this.number,
+    required this.phoneNumber,
     required this.enabled,
     required this.isWhitelist,
     required this.isBlacklist,
