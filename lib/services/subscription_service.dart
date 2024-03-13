@@ -14,6 +14,7 @@ import 'package:services/blacklist_whitelist_service.dart';
 import 'package:services/snackbar_service.dart';
 import 'package:utils/get_default_external_dir.dart';
 import 'package:models/subscription_model.dart';
+import 'package:utils/call_filter.dart';
 
 part 'subscription_model.g.dart';
 
@@ -222,19 +223,12 @@ Future<List<Subscription>> importSubscriptionsFromFile() async {
 
  // 根据订阅规则处理来电
 
-bool shouldAcceptCall(String phoneNumber) {
-  // 检查号码是否在白名单中
-  if (_whitelist.isNotEmpty && _whitelist.contains(phoneNumber)) {
-    return true;
+void handleIncomingCall(String phoneNumber) {
+  if (CallFilter.shouldAcceptCall(phoneNumber)) {
+    // 接听来电
+  } else {
+    // 拒绝来电
   }
-
-  // 检查号码是否在黑名单中
-  if (_blacklist.isNotEmpty && _blacklist.contains(phoneNumber)) {
-    return false;
-  }
-
-  // 允许所有来电
-  return true;
 }
 
    // 手动更新订阅数据
