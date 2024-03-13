@@ -1,3 +1,5 @@
+import 'package:your_project_name/models/blacklist_whitelist_data.dart';
+
 class BlacklistEntry {
   final String avatar;
   final String label;
