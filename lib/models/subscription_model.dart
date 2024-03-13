@@ -6,9 +6,9 @@ class SubscriptionModel {
   final String name;
   final String phoneNumber;
   final bool enabled;
-  final String url;
   final bool isWhitelist;
   final bool isBlacklist;
+  final String？url;
 
   SubscriptionModel({
     required this.id,
@@ -17,7 +17,7 @@ class SubscriptionModel {
     required this.enabled,
     required this.isWhitelist,
     required this.isBlacklist,
-    required this.url,
+    this.url,
   });
 
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) =>
