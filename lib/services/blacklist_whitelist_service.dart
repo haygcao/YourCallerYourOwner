@@ -48,6 +48,13 @@ class BlacklistService {
     return _entries.where((entry) => entry.isSubscribed).toList();
   }
 
+  List<BlacklistEntry> getEntries() {
+    return List.unmodifiable(_entries);
+  }
+
+  BlacklistEntry? getEntryByPhoneNumber(String phoneNumber) {
+    return _entries.firstWhere((entry) => entry.phoneNumber == phoneNumber);
+  }
 }
 
 class WhitelistService {
@@ -69,4 +76,12 @@ class WhitelistService {
     return _entries.where((entry) => entry.isSubscribed).toList();
   }
 
+  List<WhitelistEntry> getEntries() {
+    return List.unmodifiable(_entries);
+  }
+
+  WhitelistEntry? getEntryByPhoneNumber(String phoneNumber) {
+    return _entries.firstWhere((entry) => entry.phoneNumber == phoneNumber);
+  }
 }
+
