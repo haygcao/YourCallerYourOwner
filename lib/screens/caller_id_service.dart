@@ -1,5 +1,6 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:dlibphonenumber/dlibphonenumber.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
@@ -7,9 +8,10 @@ import 'package:models/location_data.dart';
 import 'package:services/location_service.dart'; // 引入 location_service.dart
 import 'package:models/label_data.dart';
 import 'package:services/label_service.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:models/contact_model.dart';
 import 'package:services/contact_service.dart';
+import 'package:models/subscription_model.dart';
+import 'package:services/subscription_service.dart';
 
 class CallerIdService {
   static Future<CallerIdData?> getCallerId() async {
@@ -39,6 +41,10 @@ class CallerIdService {
         // 使用 ContactService 获取联系人信息
         ContactService contactService = ContactService();
         Contact? contact = await contactService.getContactByPhoneNumber(phoneNumber);        
+
+        // 使用 SubscriptionService 获取联系人信息
+        ContactService contactService = SubscriptionService();
+        Contact? contact = await SubscriptionService.getContactByPhoneNumber(phoneNumber); 
         
         return CallerIdData(
           phoneNumber: phoneNumber,
