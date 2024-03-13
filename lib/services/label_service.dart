@@ -21,14 +21,14 @@ part 'label_service.g.dart';
 @JsonSerializable()
 class Label {
   final String id; // 电话 ID
-  final String name; // 电话名称
-  final String avatar; // 标签头像
+  final String? name; // 电话名称
+  final String? avatar; // 标签头像
   final String label; // 标签文本内容
   final String phoneNumber; // 电话
   Label({
     required this.id,
-    required this.name,
-    required this.avatar,
+    this.name,
+    this.avatar,
     required this.label,
     required this.phoneNumber,    
   });
