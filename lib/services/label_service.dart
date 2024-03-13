@@ -20,8 +20,8 @@ part 'label_service.g.dart';
 
 @JsonSerializable()
 class Label {
-  final String id; // 标签 ID
-  final String name; // 标签名称
+  final String id; // 电话 ID
+  final String name; // 电话名称
   final String avatar; // 标签头像
   final String label; // 标签文本内容
 
