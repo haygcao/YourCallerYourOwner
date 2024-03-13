@@ -1,14 +1,14 @@
 import 'package:models/blacklist_whitelist_data.dart';
 
 class BlacklistEntry {
-  final String avatar;
+  final String? avatar;
   final String label;
   final String phoneNumber;
   final String name;
   final bool isSubscribed;
 
   BlacklistEntry({
-    required this.avatar,
+    this.avatar,
     required this.label,
     required this.phoneNumber,
     required this.name,
@@ -17,14 +17,14 @@ class BlacklistEntry {
 }
 
 class WhitelistEntry {
-  final String avatar;
+  final String? avatar;
   final String label;
   final String phoneNumber;
   final String name;
   final bool isSubscribed;
 
   WhitelistEntry({
-    required this.avatar,
+    this.avatar,
     required this.label,
     required this.phoneNumber,
     required this.name,
