@@ -85,9 +85,9 @@ part 'subscription_model.g.dart';
   }
 
   // 根据号码查询订阅
-  Future<SubscriptionModel> getSubscriptionByNumber(String number) async {
+  Future<SubscriptionModel> getSubscriptionByphoneNumber(String phoneNumber) async {
     final List<Map<String, dynamic>> maps = await database
-        .query('subscriptions', where: 'number = ?', whereArgs: [number]);
+        .query('subscriptions', where: 'phoneNumber = ?', whereArgs: [phoneNumber]);
     return SubscriptionModel.fromJson(maps.first);
   }
 
