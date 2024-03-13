@@ -36,7 +36,7 @@ class BlacklistEntry {
 
 class WhitelistEntry {
   final int id;
-  final String avatar;
+  final String? avatar;
   final String label;
   final String phoneNumber;
   final String name;
@@ -44,7 +44,7 @@ class WhitelistEntry {
 
   WhitelistEntry({
     required this.id,
-    required this.avatar,
+    this.avatar,
     required this.label,
     required this.phoneNumber,
     required this.name,
