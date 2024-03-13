@@ -8,14 +8,14 @@ class Contact {
   final String name;
   final List<String> phoneNumbers; // 修改为列表
   final String email;
-  final String remark;
+  final String label;
 
   Contact({
     required this.id,
     required this.name,
     this.phoneNumbers = const [], // 初始化为空列表
     this.email = '',
-    this.remark = '',
+    this.label = '',
   });
 
   factory Contact.fromJson(Map<String, dynamic> json) => _$ContactFromJson(json);
