@@ -5,6 +5,11 @@ import 'package:dlibphonenumber/dlibphonenumber.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:models/location_data.dart';
 import 'package:services/location_service.dart'; // 引入 location_service.dart
+import 'package:models/label_data.dart';
+import 'package:services/label_service.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:models/contact_model.dart';
+import 'package:services/contact_service.dart';
 
 class CallerIdService {
   static Future<CallerIdData?> getCallerId() async {
@@ -24,6 +29,17 @@ class CallerIdService {
         LocationService locationService = LocationService();
         LocationData? locationData = await locationService.getCallerLocation(phoneNumber);
 
+         // 使用 LabelService 获取号码的标签
+        LabelService labelService = LabelService();
+        List<Label> labels = await labelService.getLabelsForPhoneNumber(phoneNumber);
+
+        // 获取联系人信息
+        Contact contact = await FlutterContacts.getContact(phoneNumber);
+
+        // 使用 ContactService 获取联系人信息
+        ContactService contactService = ContactService();
+        Contact? contact = await contactService.getContactByPhoneNumber(phoneNumber);        
+        
         return CallerIdData(
           phoneNumber: phoneNumber,
           countryCode: countryCode,
@@ -31,6 +47,8 @@ class CallerIdService {
           carrier: locationData?.carrier,
           numberType: locationData?.numberType,
           isLocalNumber: locationData?.isLocalNumber,
+          name: contact?.name,
+          avatar: contact?.avatar,
         );
       }
     }
@@ -47,6 +65,9 @@ class CallerIdData {
   final String? carrier;
   final PhoneNumberType? numberType;
   final bool? isLocalNumber;
+  final List<Label> labels;
+  final String? name;
+  final String? avatar;
 
   CallerIdData({
     required this.phoneNumber,
@@ -55,5 +76,8 @@ class CallerIdData {
     this.carrier,
     this.numberType,
     this.isLocalNumber,
+    required this.labels,
+    this.name,
+    this.avatar,
   });
 }
