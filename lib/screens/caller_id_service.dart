@@ -12,6 +12,45 @@ import 'package:models/contact_model.dart';
 import 'package:services/contact_service.dart';
 import 'package:models/subscription_model.dart';
 import 'package:services/subscription_service.dart';
+import 'package:models/blacklist_whitelist_data.dart';
+import 'package:services/blacklist_whitelist_service.dart';
+
+class CallerIdData {
+  final String phoneNumber;
+  final String countryCode;
+  final String? region;
+  final String? carrier;
+  final PhoneNumberType? numberType;
+  final bool? isLocalNumber;
+  final List<Label> labels;
+  final String? name;
+  final String? avatar;
+
+  CallerIdData({
+    required this.phoneNumber,
+    required this.countryCode,
+    this.region,
+    this.carrier,
+    this.numberType,
+    this.isLocalNumber,
+    required this.labels,
+    this.name,
+    this.avatar,
+  });
+
+  // 新增方法
+  static String getUnknownName() {
+    return 'Unknown';
+  }
+
+  static String getUnknownAvatar() {
+    return 'assets/avatars/unknown.png';
+  }
+
+  static List<Label> getUnknownLabels() {
+    return [const Label(id: 0, name: 'Unknown')];
+  }
+}
 
 class CallerIdService {
   static Future<CallerIdData?> getCallerId() async {
@@ -42,10 +81,68 @@ class CallerIdService {
         ContactService contactService = ContactService();
         Contact? contact = await contactService.getContactByPhoneNumber(phoneNumber);        
 
-        // 使用 SubscriptionService 获取联系人信息
-        ContactService contactService = SubscriptionService();
-        Contact? contact = await SubscriptionService.getContactByPhoneNumber(phoneNumber); 
+        // 查询黑/白名单信息
+        BlacklistService blacklistService = BlacklistService(database);
+        WhitelistService whitelistService = WhitelistService(database);
+        BlacklistEntry? blacklistEntry = await blacklistService.getEntryByPhoneNumber(phoneNumber);
+        WhitelistEntry? whitelistEntry = await whitelistService.getEntryByPhoneNumber(phoneNumber);
         
+        // 按照优先级顺序查询 name 和 avatar
+        String? name;
+        String? avatar;
+
+        if (contact != null) {
+          name = contact.name;
+          avatar = contact.avatar;
+        } else if (contactFromService != null) {
+          name = contactFromService.name;
+          avatar = contactFromService.avatar;
+        } else if (blacklistEntry != null) {
+          name = blacklistEntry.name;
+          avatar = blacklistEntry.avatar;
+        } else if (whitelistEntry != null) {
+          name = whitelistEntry.name;
+          avatar = whitelistEntry.avatar;
+        }
+
+        // 按照优先级顺序查询 name 和 avatar
+        String? name;
+        String? avatar;
+
+        if (contact != null) {
+          name = contact.name;
+          avatar = contact.avatar;
+        } else if (contactFromService != null) {
+          name = contactFromService.name;
+          avatar = contactFromService.avatar;
+        } else if (blacklistEntry != null) {
+          name = blacklistEntry.name;
+          avatar = blacklistEntry.avatar;
+        } else if (whitelistEntry != null) {
+          name = whitelistEntry.name;
+          avatar = whitelistEntry.avatar;
+        }
+
+        // 按照优先级顺序查询 labels
+        List<Label> labels;
+
+        if (contact != null) {
+          labels = contact.labels;
+        } else if (contactFromService != null) {
+          labels = contactFromService.labels;
+        } else if (blacklistEntry != null) {
+          labels = blacklistEntry.labels;
+        } else if (whitelistEntry != null) {
+          labels = whitelistEntry.labels;
+        } else {
+          labels = await labelService.getLabelsForPhoneNumber(phoneNumber);
+        }
+
+        // 如果 name、avatar 或 labels 为空，则显示默认值
+        name ??= CallerIdData.getUnknownName();
+        avatar ??= CallerIdData.getUnknownAvatar();
+        labels ??= CallerIdData.getUnknownLabels();
+
         return CallerIdData(
           phoneNumber: phoneNumber,
           countryCode: countryCode,
@@ -53,37 +150,10 @@ class CallerIdService {
           carrier: locationData?.carrier,
           numberType: locationData?.numberType,
           isLocalNumber: locationData?.isLocalNumber,
-          name: contact?.name,
-          avatar: contact?.avatar,
+          labels: labels,
+          name: name,
+          avatar: avatar,
         );
       }
     }
-
     return null;
-  }
-}
-
-// 来电号码信息数据模型
-class CallerIdData {
-  final String phoneNumber;
-  final String countryCode;
-  final String? region;
-  final String? carrier;
-  final PhoneNumberType? numberType;
-  final bool? isLocalNumber;
-  final List<Label> labels;
-  final String? name;
-  final String? avatar;
-
-  CallerIdData({
-    required this.phoneNumber,
-    required this.countryCode,
-    this.region,
-    this.carrier,
-    this.numberType,
-    this.isLocalNumber,
-    required this.labels,
-    this.name,
-    this.avatar,
-  });
-}
