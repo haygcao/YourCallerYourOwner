@@ -73,24 +73,7 @@ class _CallerIdOverlayState extends State<CallerIdOverlay> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             // 显示号码和归属地
-Row(
-  children: [
-    Text(
-      '号码：',
-      style: const TextStyle(fontSize: 16.0),
-    ),
-    Text(
-      '${_callerIdData.phoneNumber}',
-      style: const TextStyle(fontSize: 24.0),
-    ),
-  ],
-),
-const SizedBox(height: 8.0),
-Text(
-  '归属地：${_callerIdData.region}',
-  style: const TextStyle(fontSize: 16.0),
-),
+
  
               // 显示号码和归属地
               Row(
