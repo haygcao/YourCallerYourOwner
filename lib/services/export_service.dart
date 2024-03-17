@@ -1,46 +1,108 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:csv/csv.dart';
+import 'package:flutter/foundation.dart';
 import 'package:json_serializable/json_serializable.dart';
 import 'package:path_provider/path_provider.dart';
-
-part 'subscription_model.g.dart';
-
-@JsonSerializable()
-class Subscription {
-  String name;
-  String description;
-  String url;
-  String originalUrl;
-
-  Subscription(this.name, this.description, this.url, this.originalUrl);
-
-  factory Subscription.fromJson(Map<String, dynamic> json) => _$SubscriptionFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SubscriptionToJson(this);
-}
+import 'package:sqflite/sqflite.dart';
+import 'package:services/snackbar_service.dart';
+import 'package:services/subscription_service.dart';
+import 'utils/get_default_external_dir.dart';
 
 void main() async {
-  // 获取设备的文档目录
-  Directory directory = await getApplicationDocumentsDirectory();
+  // 初始化数据库
+  final database = await openDatabase(
+    'subscriptions.db',
+    version: 1,
+  );
 
-  // 导出白名单订阅数据
-  String csvData = CsvUtils.generate([
-    Subscription('Subscription 1', 'Description 1', 'https://example.com/1', 'https://original.com/1'),
-    Subscription('Subscription 2', 'Description 2', 'https://example.com/2', 'https://original.com/2'),
-  ]);
-  File csvFile = File('${directory.path}/whitelisted_subscriptions.csv');
-  csvFile.writeAsString(csvData);
+  // 创建 SubscriptionService 实例
+  final subscriptionService = SubscriptionService(database);
 
-  // 导出黑名单订阅数据
-  csvData = CsvUtils.generate([
-    Subscription('Subscription 3', 'Description 3', 'https://example.com/3', 'https://original.com/3'),
-    Subscription('Subscription 4', 'Description 4', 'https://example.com/4', 'https://original.com/4'),
-  ]);
-  csvFile = File('${directory.path}/blacklisted_subscriptions.csv');
-  csvFile.writeAsString(csvData);
+  // 选择导出类型
+  final exportType = await _chooseExportType();
 
-  // 导出通讯录
-  // ...
+  // 选择导出格式
+  final exportFormat = await _chooseExportFormat();
 
-  // 导出自己标记的号码
-  // ...
+  // 选择导出文件夹
+  final directory = await _chooseDirectory();
+
+  // 导出数据
+  if (exportType == 'all') {
+    _exportAllSubscriptions(subscriptionService, directory, exportFormat);
+  } else if (exportType == 'whitelist') {
+    _exportSubscriptions(subscriptionService, directory, exportFormat, 'whitelisted');
+  } else if (exportType == 'blacklist') {
+    _exportSubscriptions(subscriptionService, directory, exportFormat, 'blacklisted');
+  } else {
+    return;
+  }
+
+  // 显示成功提示
+  print('导出成功！');
 }
+
+Future<String> _chooseExportType() async {
+  final options = ['全部', '白名单', '黑名单'];
+  final index = await showDialog<int>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('选择导出类型'),
+      content: Text('请选择要导出的数据类型'),
+      actions: <Widget>[
+        for (var i = 0; i < options.length; i++)
+          TextButton(
+            child: Text(options[i]),
+            onPressed: () => Navigator.pop(context, i),
+          ),
+      ],
+    ),
+  );
+  return options[index];
+}
+
+Future<String> _chooseExportFormat() async {
+  final options = ['CSV', 'JSON', 'TXT'];
+  final index = await showDialog<int>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('选择导出格式'),
+      content: Text('请选择要导出的数据格式'),
+      actions: <Widget>[
+        for (var i = 0; i < options.length; i++)
+          TextButton(
+            child: Text(options[i]),
+            onPressed: () => Navigator.pop(context, i),
+          ),
+      ],
+    ),
+  );
+  return options[index].toLowerCase();
+}
+
+Future<Directory> _chooseDirectory() async {
+  final directoryPath = await pickDirectory();
+
+  // 用户未选择文件夹
+  if (directoryPath == null) {
+    throw Exception('用户未选择文件夹');
+  } else {
+    // 显示错误提示
+    SnackbarService.showErrorSnackBar('用户未选择文件夹，将使用默认目录');
+
+    // 使用默认目录
+    directoryPath = await _getDefaultExternalStorageDirectory();
+  }
+
+  return Directory(directoryPath);
+}
+
+
+Future<void> _exportAllSubscriptions(SubscriptionService subscriptionService, Directory directory, String exportFormat) async {
+  // 使用 SubscriptionService 获取全部数据
+  final subscriptions = await subscriptionService.getAllSubscriptions();
+  final csvData = CsvUtils.generate(subscriptions);
+  final jsonData = jsonEncode(subscriptions);
+  final txtData = subscriptions.map((subscription) => subscription.toString()).join('\n');
+  final file = File('
