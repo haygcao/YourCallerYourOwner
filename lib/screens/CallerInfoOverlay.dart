@@ -2,24 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:screens/caller_id_service.dart';
 
 import 'package:flutter/material.dart';
+import 'package:models/caller_id_data.dart';
+import 'package:rxdart/rxdart.dart';
 
-class CallerIdScreen extends StatefulWidget {
-  const CallerIdScreen({Key? key}) : super(key: key);
+class CallerIdOverlay extends StatefulWidget {
+  final CallerIdData callerIdData;
+
+  const CallerIdOverlay({Key? key, required this.callerIdData}) : super(key: key);
 
   @override
-  State<CallerIdScreen> createState() => _CallerIdScreenState();
+  State<CallerIdOverlay> createState() => _CallerIdOverlayState();
 }
 
-class _CallerIdScreenState extends State<CallerIdScreen> {
-  final _callerIdSubject = BehaviorSubject<CallerIdData>();
+class _CallerIdOverlayState extends State<CallerIdOverlay> {
+  final _overlayEntry = OverlayEntry();
 
   @override
   void initState() {
     super.initState();
 
-    // 监听 callerIdStream
+    // 将 OverlayEntry 插入到 Overlay 中
+    _overlayEntry.insert(_getOverlay());
+
+    // 监听 callerIdData 变化并更新浮动方块
     _callerIdSubject.listen((callerIdData) {
-      // 更新 UI 界面
       setState(() {
         // 更新 _callerIdData 变量
         _callerIdData = callerIdData;
@@ -29,45 +35,123 @@ class _CallerIdScreenState extends State<CallerIdScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 使用 _callerIdData 变量构建 UI 界面
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('来电号码：${_callerIdData.phoneNumber}'),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
+    return _buildCallerIdBox();
+  }
+
+  @override
+  void dispose() {
+    // 移除 OverlayEntry
+    _overlayEntry.remove();
+    super.dispose();
+  }
+
+  Overlay _getOverlay() {
+    return Overlay.of(context) ?? Overlay.of(context.findRootAncestor());
+  }
+
+  Widget _buildCallerIdBox() {
+    return Dismissible(
+      key: ValueKey(_callerIdData.phoneNumber),
+      onDismissed: (_) {
+        // 关闭浮动方块
+        _overlayEntry.remove();
+      },
+      child: GestureDetector(
+        onPanUpdate: (details) {
+          // 更新浮动方块的位置
+          _overlayEntry.overlay.insert(_overlayEntry.remove()..widget = _buildCallerIdBox(
+            offset: details.delta,
+          ));
+        },
+        child: Container(
+          margin: const EdgeInsets.all(16.0),
           padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+             // 显示号码和归属地
+Row(
+  children: [
+    Text(
+      '号码：',
+      style: const TextStyle(fontSize: 16.0),
+    ),
+    Text(
+      '${_callerIdData.phoneNumber}',
+      style: const TextStyle(fontSize: 24.0),
+    ),
+  ],
+),
+const SizedBox(height: 8.0),
+Text(
+  '归属地：${_callerIdData.region}',
+  style: const TextStyle(fontSize: 16.0),
+),
+ 
               // 显示号码和归属地
-              Text(
-                '${_callerIdData.phoneNumber}',
-                style: const TextStyle(fontSize: 24.0),
-              ),
-              const SizedBox(height: 8.0),
-              Text(
-                '${_callerIdData.region}',
-                style: const TextStyle(fontSize: 16.0),
-              ),
+              Row(
+                children: [
+                  Text(
+                    '号码：',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                  Text(
+                    '${_callerIdData.phoneNumber}',
+                    style: const TextStyle(fontSize: 24.0),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  '归属地：${_callerIdData.region}',
+                  style: const TextStyle(fontSize: 16.0),
+                ),
 
               // 显示运营商和号码类型
               const Divider(height: 16.0),
-              Text(
-                '运营商：${_callerIdData.carrier}',
-                style: const TextStyle(fontSize: 16.0),
+              Row(
+                children: [
+                  Text(
+                    '运营商：',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                  Text(
+                    '${_callerIdData.carrier}',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                ],
               ),
               const SizedBox(height: 8.0),
-              Text(
-                '号码类型：${_callerIdData.numberType?.name}',
-                style: const TextStyle(fontSize: 16.0),
+              Row(
+                children: [
+                  Text(
+                    '号码类型：',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                  Text(
+                    '${_callerIdData.numberType?.name}',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                ],
               ),
 
               // 显示是否为本地号码
               const Divider(height: 16.0),
-              Text(
-                '是否为本地号码：${_callerIdData.isLocalNumber}',
-                style: const TextStyle(fontSize: 16.0),
+              Row(
+                children: [
+                  Text(
+                    '是否为本地号码：',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                  Text(
+                    '${_callerIdData.isLocalNumber}',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                ],
               ),
 
               // 显示标签
@@ -108,13 +192,6 @@ class _CallerIdScreenState extends State<CallerIdScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    // 关闭 _callerIdSubject
-    _callerIdSubject.close();
-    super.dispose();
   }
 }
 
