@@ -5,90 +5,90 @@ import 'package:screens/caller_id_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CallerIdOverlay extends StatefulWidget {
- final CallerIdData callerIdData;
+  final CallerIdData callerIdData;
 
- const CallerIdOverlay({Key? key, required this.callerIdData}) : super(key: key);
+  const CallerIdOverlay({Key? key, required this.callerIdData}) : super(key: key);
 
- @override
- State<CallerIdOverlay> createState() => _CallerIdOverlayState();
+  @override
+  State<CallerIdOverlay> createState() => _CallerIdOverlayState();
 }
 
 class _CallerIdOverlayState extends State<CallerIdOverlay> {
- final _overlayEntry = OverlayEntry();
+  final _overlayEntry = OverlayEntry();
   
- @override
- void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  // 将 OverlayEntry 插入到 Overlay 中
-  _overlayEntry.insert(_getOverlay());
+    // 将 OverlayEntry 插入到 Overlay 中
+    _overlayEntry.insert(_getOverlay());
 
-  // 监听通话状态变化
-  _callStateSubject.listen((callState) {
-   if (callState == CallState.ended) {
-    // 通话结束后关闭浮动方块
-    _overlayEntry.remove();
-   }
-  });
- }
- @override
- void initState() {
-  super.initState();
-
-  // 将 OverlayEntry 插入到 Overlay 中
-  _overlayEntry.insert(_getOverlay());
-
-  // 监听 callerIdData 变化并更新浮动方块
-  _callerIdSubject.listen((callerIdData) {
-   setState(() {
-    // 更新 _callerIdData 变量
-    _callerIdData = callerIdData;
-   });
-  });
- }
-
- @override
- Widget build(BuildContext context) {
-  return _buildCallerIdBox();
- }
-
- @override
- void dispose() {
-  // 移除 OverlayEntry
-  _overlayEntry.remove();
-  super.dispose();
- }
-
- Overlay _getOverlay() {
-  return Overlay.of(context) ?? Overlay.of(context.findRootAncestor());
- }
-
- Widget _buildCallerIdBox() {
-  return Dismissible(
-   key: ValueKey(_callerIdData.phoneNumber),
-   onDismissed: (_) {
-    // 关闭浮动方块
-    _overlayEntry.remove();
-   },
-   child: GestureDetector(
-    onPanUpdate: (details) {
-     // 更新浮动方块的位置
-     _overlayEntry.overlay.insert(_overlayEntry.remove()..widget = _buildCallerIdBox(
-      offset: details.delta,
-     ));
-    },
-    void onHorizontalDragEnd(DragEndDetails details) {
-      // 判断用户是否想要关闭浮动窗口
-      if (details.primaryVelocity > 0) {
-        // 向右滑动关闭浮动窗口
+    // 监听通话状态变化
+    _callStateSubject.listen((callState) {
+      if (callState == CallState.ended) {
+        // 通话结束后关闭浮动方块
         _overlayEntry.remove();
-      } else if (details.primaryVelocity < 0) {
-        // 向左滑动关闭浮动窗口
-        _overlayEntry.remove();
-      } else {
-       // 点击浮动窗口外部，不关闭浮动窗口 
       }
-    },
+    });
+   }
+  @override
+  void initState() {
+    super.initState();
+
+    // 将 OverlayEntry 插入到 Overlay 中
+    _overlayEntry.insert(_getOverlay());
+
+    // 监听 callerIdData 变化并更新浮动方块
+    _callerIdSubject.listen((callerIdData) {
+      setState(() {
+       // 更新 _callerIdData 变量
+        _callerIdData = callerIdData;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildCallerIdBox();
+  }
+
+  @override
+  void dispose() {
+    // 移除 OverlayEntry
+    _overlayEntry.remove();
+    super.dispose();
+  }
+
+  Overlay _getOverlay() {
+    return Overlay.of(context) ?? Overlay.of(context.findRootAncestor());
+  }
+
+  Widget _buildCallerIdBox() {
+    return Dismissible(
+      key: ValueKey(_callerIdData.phoneNumber),
+      onDismissed: (_) {
+        // 关闭浮动方块
+        _overlayEntry.remove();
+      },
+      child: GestureDetector(
+        onPanUpdate: (details) {
+          // 更新浮动方块的位置
+          _overlayEntry.overlay.insert(_overlayEntry.remove()..widget = _buildCallerIdBox(
+            offset: details.delta,
+          ));
+        },
+        onHorizontalDragEnd: (details) {
+          // 判断用户是否想要关闭浮动窗口
+          if (details.primaryVelocity > 0) {
+            // 向右滑动关闭浮动窗口
+            _overlayEntry.remove();
+          } else if (details.primaryVelocity < 0) {
+            // 向左滑动关闭浮动窗口
+            _overlayEntry.remove();
+          } else {
+            // 点击浮动窗口外部，不关闭浮动窗口
+          }
+        },
         child: Container(
           // 设置浮动框尺寸
           width: 324.0,
@@ -106,31 +106,38 @@ class _CallerIdOverlayState extends State<CallerIdOverlay> {
             ),
             borderRadius: BorderRadius.circular(35.0),
           ),
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                top: 22,
-                left: 14,
-                child: Container(
-                  width: 296,
-                  height: 296,
-                  child: Stack(
-                    children: <Widget>[
-                      // 添加关闭按钮
-                      Positioned(
-                        left: 23,
-                        top: 18,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.close,
-                            color: Color.fromRGBO(255, 0, 0, 1.0),
-                          ),
-                          onPressed: () {
-                            // 关闭浮动窗口
-                            _overlayEntry.remove();
-                          },
-                        ),
-                      ),
+          child: _buildCallerIdContent(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCallerIdContent() {
+    return Stack(
+      children: <Widget>[
+        Positioned(
+          top: 22,
+          left: 14,
+          child: Container(
+            width: 296,
+            height: 296,
+            child: Stack(
+              children: <Widget>[
+                // 添加关闭按钮
+                Positioned(
+                  left: 23,
+                  top: 18,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: Color.fromRGBO(255, 0, 0, 1.0),
+                    ),
+                    onPressed: () {
+                      // 关闭浮动窗口
+                      _overlayEntry.remove();
+                    },
+                  ),
+                ),
                     // 显示头像
                     Positioned(
                       left: 27.0,
@@ -337,7 +344,7 @@ class _CallerIdOverlayState extends State<CallerIdOverlay> {
                       height: 40.0,
                       child: Text(
                         textAlign: TextAlign.left,
-                        '${_callerIdData.labels.map((label) => label.name).join(', ')}',
+                        '${_callerIdData.phoneNumber}',
                         style: const TextStyle(
                           color: Color.fromRGBO(44, 44, 65, 1),
                           fontFamily: 'Noto Sans SC',
@@ -351,11 +358,11 @@ class _CallerIdOverlayState extends State<CallerIdOverlay> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ],
-                ),
-              ),
-             ),
-            );
-           }
-          }
-        }
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
