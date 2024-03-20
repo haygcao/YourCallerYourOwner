@@ -41,3 +41,9 @@ dependencies:
 dependencies:
   android_intent: ^0.6.0
   rxdart: ^0.27.2
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.0
+  material_icons: ^1.0.0
