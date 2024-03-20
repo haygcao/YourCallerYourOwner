@@ -321,7 +321,7 @@ class _CallerIdOverlayState extends State<CallerIdOverlay> {
                       ),
                     ), 
 
- 
+                   // 显示labels图片
                     // 显示labels图片
                     Positioned(
                       left: 14.0,
@@ -334,30 +334,30 @@ class _CallerIdOverlayState extends State<CallerIdOverlay> {
                         ),
                       ),
                     ),
-                    // 显示labels图片
+                  // 显示labels图片
  
-                     // 显示号码
-                    Positioned(
-                      left: 35.0,
-                      width: 257.0,
-                      top: 278.0,
-                      height: 40.0,
-                      child: Text(
-                        textAlign: TextAlign.left,
-                        '${_callerIdData.phoneNumber}',
-                        style: const TextStyle(
-                          color: Color.fromRGBO(44, 44, 65, 1),
-                          fontFamily: 'Noto Sans SC',
-                          fontSize: 30,
-                          letterSpacing: 0.07,
-                          fontWeight: FontWeight.normal,
-                          height: 1,
-                          // 设置自动字体大小
-                          autofontSize: true,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                  // 显示号码
+                  Positioned(
+                    left: 35.0,
+                    width: 257.0,
+                    top: 278.0,
+                    height: 40.0,
+                    child: Text(
+                       textAlign: TextAlign.left,
+                      '${_callerIdData.phoneNumber}',
+                      style: const TextStyle(
+                        color: Color.fromRGBO(44, 44, 65, 1),
+                        fontFamily: 'Noto Sans SC',
+                        fontSize: 30,
+                        letterSpacing: 0.07,
+                        fontWeight: FontWeight.normal,
+                        height: 1,
+                        // 设置自动字体大小
+                        autofontSize: true,
                       ),
-                    ),
+                   overflow: TextOverflow.ellipsis,
+                 ),
+                ),
               ],
             ),
           ),
