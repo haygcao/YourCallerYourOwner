@@ -1,0 +1,20 @@
+                    // 显示图片
+                    // 显示labels图片
+  Positioned(
+  left: 14.0,
+  top: 238.0,
+  child: SizedBox(
+    height: 26.0, // 设置容器的高度
+    child: Builder(
+      builder: (context) {
+        final image = Image.asset('assets/images/labels.png');
+        double width = image.width;
+        double height = image.height;
+        return AspectRatio(
+          aspectRatio: width / height, // 设置图片的宽高比
+          child: image,
+        );
+      },
+    ),
+  ),
+),  
