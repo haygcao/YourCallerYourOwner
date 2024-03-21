@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:dlibphonenumber/dlibphonenumber.dart';
 import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
-import 'package:models/location_data.dart';
+import 'package:models/location_model.dart';
 
 class LocationService {
 
