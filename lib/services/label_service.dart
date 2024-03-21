@@ -14,7 +14,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:services/snackbar_service.dart';
 import 'package:utils/predefined_labels.dart';
 import 'package:utils/get_default_external_dir.dart';
-import 'package:lib/models/label_data.dart';
+import 'package:lib/models/label_model.dart';
 
 part 'label_service.g.dart';
 
