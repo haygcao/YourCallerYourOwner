@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paginated_search_bar/paginated_search_bar.dart';
+import 'package:widgets/search_bar_ui.dart';
 
 class SearchBar extends StatefulWidget {
   final List<String> databaseNames; // 新增参数：数据库名称列表
