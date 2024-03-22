@@ -106,9 +106,11 @@ void _onSuggestion(String text, List<String> databases) async {
 
 // 启用所有数据库并搜索所有列
 
-searchBar.setEnabledDatabases(['call_records.db', 'whitlist.db', 'contacts.db']);
-
-searchBar.columnNames = ['name', 'item', 'phonenumber'];
+// 在需要的地方启用或禁用数据库
+var searchBar = SearchBarWidget(
+  databaseNames: ['call_records.db', 'whitlist.db', 'contacts.db'],
+  columnNames: ['name', 'item', 'name'],
+);
 
 
 
