@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:easy_search_bar/easy_search_bar.dart';
+import 'package:paginated_search_bar/paginated_search_bar.dart';
 
-class SearchBarWidget extends StatefulWidget {
+class SearchBar extends StatefulWidget {
   final List<String> databaseNames; // 新增参数：数据库名称列表
   final List<String> columnNames; // 新增参数：搜索列名列表
-  final Function(String, List<String>) onSearch;
-  final Function(String, List<String>) onSuggestion;
   final Color backgroundColor;
   final BorderRadius borderRadius;
 
-  const SearchBarWidget({
+  const SearchBar({
     Key key,
     this.databaseNames, // 赋值新的参数
     this.columnNames, // 赋值新的参数
-    this.onSearch,
-    this.onSuggestion,
     this.backgroundColor = Colors.white,
     this.borderRadius = BorderRadius.zero,
   }) : super(key: key);
 
   @override
-  _SearchBarWidgetState createState() => _SearchBarWidgetState();
+  _SearchBarState createState() => _SearchBarState();
 }
 
-class _SearchBarWidgetState extends State<SearchBarWidget> {
+class _SearchBarState extends State<SearchBar> {
   String _hintText; // 新增状态：提示文本
   List<String> _enabledDatabases = []; // 新增状态：已启用的数据库
 
   @override
   Widget build(BuildContext context) {
-    return SearchBar(
+    return PaginatedSearchBar<String>(
       hintText: _hintText,
+      // 设置每页显示的搜索结果数量
+      pageSize: 10,
+      // 设置最大加载的页数 (可根据需要调整)
+      maxPages: 1,      
       onSearch: (text) => _onSearch(text, _enabledDatabases),
       onSuggestion: (text) => _onSuggestion(text, _enabledDatabases),
       backgroundColor: widget.backgroundColor,
@@ -53,23 +53,19 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   }
 
   // 新增方法：处理搜索
-void _onSearch(String text, List<String> databases) async {
-  // Get data from multiple databases.
-  var results = await Future.wait(databases.map((databaseName) =>
-      _getDataFromDatabase(databaseName, widget.columnNames[databases.indexOf(databaseName)], text)));
+  Future<List<String>> _onSearch(String text) async {
+    // Get data from multiple databases.
+    var results = await Future.wait(widget.databaseNames.map((databaseName) =>
+        _getDataFromDatabase(databaseName, widget.columnNames[widget.databaseNames.indexOf(databaseName)], text)));
 
-  // Merge results (assuming each result is a list of strings)
-  List<String> mergedResults = [];
-  for (var databaseResult in results) {
-    mergedResults.addAll(databaseResult);
+    // Merge results (assuming each result is a list of strings)
+    List<String> mergedResults = [];
+    for (var databaseResult in results) {
+      mergedResults.addAll(databaseResult);
+    }
+
+    return mergedResults;
   }
-
-  // Process merged results (simple example: print them)
-  print('Search results: $mergedResults');
-
-  // You can further process the results here based on your needs
-  // (e.g., filter, sort, display in UI)
-}
 
   // 新增方法：处理建议
 void _onSuggestion(String text, List<String> databases) async {
@@ -107,7 +103,7 @@ void _onSuggestion(String text, List<String> databases) async {
 
 
 // 在需要的地方启用或禁用数据库
-var searchBar = SearchBarWidget(
+var searchBar = SearchBar(
   databaseNames: ['call_records.db', 'whitlist.db', 'contacts.db'],
   columnNames: ['name', 'item', 'name'],
 );
@@ -122,3 +118,9 @@ searchBar.setEnabledDatabases(['call_records.db']);
 
 searchBar.columnNames = ['name', 'phonenumber'];
 searchBar.setHintText('Search for call records');
+const SearchBar(
+  databaseNames: ['call_records.db', 'whitlist.db', 'contacts.db'],
+  columnNames: ['name', 'item', 'name'],
+  backgroundColor: Colors.blue,
+  borderRadius: BorderRadius.circular(10.0),
+);
