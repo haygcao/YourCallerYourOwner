@@ -36,6 +36,7 @@ class _SearchBarState extends State<SearchBar> {
       onSuggestion: (text) => _onSuggestion(text, _enabledDatabases),
       backgroundColor: widget.backgroundColor,
       borderRadius: widget.borderRadius,
+      child: SearchBarUI(), // 使用自定义的 UI
     );
   }
 
