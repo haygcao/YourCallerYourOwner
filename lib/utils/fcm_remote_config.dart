@@ -14,10 +14,9 @@ remoteConfig.setConfigSettings(RemoteConfigSettings(
 await remoteConfig.fetchAndActivate();
 
 // 获取配置参数
-String configValue = remoteConfig.getString('config_key');
+String apiKey = remoteConfig.getString('api_key');
 
-// 监听配置参数更改
-remoteConfig.addListener(() {
-  // 重新加载配置
-  // ...
-});
+// 提供方法获取 real_key
+String getApiKey() {
+  return apiKey;
+}
