@@ -47,3 +47,7 @@ dependencies:
 
   cupertino_icons: ^1.0.0
   material_icons: ^1.0.0
+dependencies:
+  flutter:
+    sdk: flutter
+  google_mobile_ads: ^2.0.0
