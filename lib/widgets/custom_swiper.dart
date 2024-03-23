@@ -1,6 +1,6 @@
-// 导入 Firebase Remote Config 库
-import 'package:utils/firebase_remote_config.dart';
 
+// 导入 Firebase Remote Config 库
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 // 定义 Card1/2/3 和 AdWidget 的逻辑代码
 import 'package:widgets/card1.dart';
 import 'package:widgets/card2.dart';
@@ -11,7 +11,8 @@ import 'package:widgets/card1_ui.dart';
 import 'package:widgets/card2_ui.dart';
 import 'package:widgets/card3_ui.dart';
 import 'package:widgets/ad_widget_ui.dart';
-
+// 导入 Firebase Remote Config 库
+import 'package:utils/fcm_remote_config.dart';
 // 定义 CustomSwiper 类，继承自 StatefulWidget
 class CustomSwiper extends StatefulWidget {
  // 构造函数
