@@ -51,3 +51,4 @@ dependencies:
   flutter:
     sdk: flutter
   google_mobile_ads: ^2.0.0
+firebase_remote_config: ^4.0.0
