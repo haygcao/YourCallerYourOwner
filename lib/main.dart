@@ -33,6 +33,26 @@ import 'views/label_screen.dart';
 import 'views/contact_screen.dart';
 import 'views/call_log_screen.dart';
 
+
+// 导入 app_data_collection.dart 和 account_auth.dart 文件
+import 'package:utils/app_data_collection.dart';
+import 'package:utils/account_auth.dart';
+
+void main() {
+  // ...
+
+  // 收集 App 活动数据
+  logEvent('app_launched');
+
+  // ...
+
+  // Google Drive 授权
+  signInWithGoogle().then((_) {
+    // ...
+  });
+
+  // ...
+}
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
