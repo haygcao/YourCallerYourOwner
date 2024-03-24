@@ -34,3 +34,12 @@ class HomePaddingStyle {
   static const EdgeInsets vertical = EdgeInsets.symmetric(vertical: 16.0);
 
 }
+
+
+const BoxDecoration rejectCallsBackgroundStyle = BoxDecoration(
+  borderRadius: BorderRadius.circular(30),
+  color: Color(0xFFF95B68),
+);
+
+const double rejectCallsMinWidth = 343;
+const double rejectCallsMaxWidth = MediaQuery.of(context).size.width * 0.83;
