@@ -3,6 +3,7 @@ class SubscriptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double maxWidth = MediaQuery.of(context).size.width * 0.39;
     return GestureDetector(
       onTap: () {
         // 跳转到订阅管理页面
@@ -20,7 +21,7 @@ class SubscriptionCard extends StatelessWidget {
           borderRadius: CardStyle.borderRadius,
         ),
         child: Container(
-          width: 165,
+          width: maxWidth,
           height: 106,
           color: CardStyle.backgroundColor,
           child: Column(
@@ -62,3 +63,13 @@ class SubscriptionCard extends StatelessWidget {
     );
   }
 }
+
+
+const minWidth = 165.0; // 卡片最小宽度
+const maxWidth = MediaQuery.of(context).size.width * 0.39; // 卡片最大宽度
+
+Container(
+  width: MediaQuery.of(context).size.width * 0.39, // 最大宽度为屏幕宽度的 39%
+  minWidth: minWidth,
+  ...
+),
