@@ -98,22 +98,42 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: subtitleTextStyle,
                   ),
                 ),
+
+                
                 const Padding(
                   padding: HomePaddingStyle.horizontal,
-                  child: Row(
-                    children: [
-                      Text(
-                        'Reject All Blacklist Calls (Not Advised)',
-                        style: TextStyle,
-                      ),
-                      const Spacer(),
-                      Switch(
-                        value: false,
-                        onChanged: (value) {},
-                      ),
-                    ],
-                  ),
+                   Container(
+  decoration: rejectCallsBackgroundStyle,
+  padding: rejectCallsPaddingStyle,
+  constraints: BoxConstraints(
+    minWidth: rejectCallsMinWidth,
+    maxWidth: rejectCallsMaxWidth,
+  ),
+  child: Row(
+    children: [
+      Text(
+        'Reject All Blacklist Calls (Not Advised)',
+        style: rejectCallsTextStyle,
+      ),
+      const Spacer(),
+GestureDetector(
+  onTap: () {
+    // Handle switch tap event
+  },
+  child: Switch(
+    value: false,
+    onChanged: (value) {},
+    style: switchStyle,
+    thumbIcon: thumbIcon,
+  ),
+),
+    ],
+  ),
+),
+                
                 ),
+
+                
               ],
             ),
           ),
