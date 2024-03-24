@@ -83,8 +83,13 @@ class LabelService {
 
     // 4. 翻译标签名称
     final Locale locale = Localizations.localeOf(context);
+    // 使用 intl 包提供的 `Intl.message` 方法翻译文本
     for (var i = 0; i < labels.length; i++) {
-      labels[i].name = _translations[locale.languageCode][labels[i].name];
+      labels[i].name = Intl.message(
+        labels[i].name,
+        locale: locale,
+        args: labels[i].args,
+      );
     }
 
     // 5. 添加标签与通话记录/联系人的关联关系
