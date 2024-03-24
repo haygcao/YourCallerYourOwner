@@ -7,6 +7,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:csv/csv.dart';
+import 'package:intl/intl.dart';
 import 'package:json_serializable/json_serializable.dart';
 import 'package:services/translate_service.dart';
 import 'package:path_provider/path_provider.dart';
@@ -102,7 +103,10 @@ class LabelService {
               'call_log_id': callLogEntry.id,
             });
           } catch (error) {
-            SnackbarService.showSuccessSnackBar('Error adding label-call log relation: $error');
+            SnackbarService.showSuccessSnackBar(Intl.message(
+              'Error adding label-call log relation: $error',
+              locale: Localizations.localeOf(context),
+            ));
           }
         }
       }
@@ -116,7 +120,10 @@ class LabelService {
             'contact_id': contact.id,
           });
         } catch (error) {
-          SnackbarService.showSuccessSnackBar('Error adding label-contact relation: $error');
+          SnackbarService.showSuccessSnackBar(Intl.message(
+            'Error adding label-contact relation: $error',
+          locale: Localizations.localeOf(context),
+         ));
         }
       }
     }
@@ -215,10 +222,16 @@ Future<void> deleteLabelContactRelation(String contactId) async {
       await File(filePath).writeAsString(CsvList.from(csvData).toString());
 
       // 显示成功消息（显示成功消息）
-      showSuccessSnackBar('Labeled numbers exported successfully to $filePath');
+      showSuccessSnackBar(Intl.message(
+        'Labeled numbers exported successfully to $filePath',
+       locale: Localizations.localeOf(context), 
+      ));
     } catch (error) {
       // 显示错误消息（显示错误消息）
-      showErrorSnackBar('Error exporting labeled numbers: $error');
+      showErrorSnackBar(Intl.message(
+        'Error exporting labeled numbers: $error',
+        locale: Localizations.localeOf(context),
+      ));
     }
   }
 
