@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:views/function_card_ui.dart';
+
 class FunctionCard extends StatelessWidget {
   const FunctionCard({
     super.key,
