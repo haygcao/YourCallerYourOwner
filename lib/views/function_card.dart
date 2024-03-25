@@ -40,7 +40,7 @@ class FunctionCard extends StatelessWidget {
           borderRadius: CardStyle.borderRadius,
         ),
         child: AspectRatio(
-          aspectRatio: 16 / 9, // 设置卡片的宽高比为 16:9
+          aspectRatio: 3.1 / 2, // 设置卡片的宽高比为 3.1:2
           child: Container(
             constraints: BoxConstraints(
               minWidth: minWidth,
