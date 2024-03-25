@@ -71,7 +71,7 @@ class FunctionCard extends StatelessWidget {
             ),
 
             child: Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 16.0, right: 16.0, bottom: 8.0), // 卡片内部边距
+              padding: CardStyle.insidePadding, // 卡片内部边距
               child: Column(
                 children: [
                   // 左上角的图标
@@ -79,7 +79,7 @@ class FunctionCard extends StatelessWidget {
                     children: [
                       // 左上角图标背景
                       Container(
-                        margin: EdgeInsets.only(top: 16.0, left: 16.0), // 图标顶部和左侧边距
+                        margin: CardStyle.iconPadding, // 图标顶部和左侧边距
                         width: 32.0,
                         height: 32.0,
                         decoration: BoxDecoration(
@@ -97,7 +97,7 @@ class FunctionCard extends StatelessWidget {
                   // 右上角的菜单按钮
                   const Spacer(), // 占位符，使菜单按钮位于右上角
                   Container(
-                    margin: EdgeInsets.only(top: 16.0, right: 16.0), // 菜单按钮顶部和右侧边距
+                    margin: CardStyle.menuPadding, // 菜单按钮顶部和右侧边距
                     child: Icon(
                       Icons.more_vert,
                       color: Colors.grey,
@@ -107,7 +107,7 @@ class FunctionCard extends StatelessWidget {
 
                   // 卡片底部文字
                   Container(
-                    margin: EdgeInsets.only(bottom: 8.0, left: 16.0), // 文字底部和左侧边距
+                    margin: CardStyle.textPadding, // 文字底部和左侧边距
                     child: Text(
                       title, // 文本
                       style: TextStyle(
