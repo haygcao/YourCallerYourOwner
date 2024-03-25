@@ -16,7 +16,7 @@ void main() {
     iconBackgroundColor: Colors.white,
     icon: Icons.subscriptions,
     title: 'Subscription Management',
-    titleColor: Colors.black,
+    //titleColor: Colors.black,
   );
 
   FunctionCard contactsCard = FunctionCard(
@@ -26,7 +26,7 @@ void main() {
     iconBackgroundColor: Colors.white,
     icon: Icons.contacts,
     title: 'Contacts',
-    titleColor: Colors.black,
+    //titleColor: Colors.black,
   );
 
   FunctionCard whitelistCard = FunctionCard(
@@ -36,7 +36,7 @@ void main() {
     iconBackgroundColor: Colors.white,
     icon: Icons.check_circle,
     title: 'Whitelist',
-    titleColor: Colors.black,
+    //titleColor: Colors.black,
   );
 
   FunctionCard blacklistCard = FunctionCard(
@@ -46,7 +46,7 @@ void main() {
     iconBackgroundColor: Colors.white,
     icon: Icons.cancel,
     title: 'Blacklist',
-    titleColor: Colors.black,
+    //titleColor: Colors.black,
   );
 
   FunctionCard wildcardCard = FunctionCard(
@@ -56,7 +56,7 @@ void main() {
     iconBackgroundColor: Colors.white,
     icon: Icons.star,
     title: 'Wildcard',
-    titleColor: Colors.black,
+    //titleColor: Colors.black,
   );
 
   FunctionCard syncCard = FunctionCard(
@@ -66,7 +66,7 @@ void main() {
     iconBackgroundColor: Colors.white,
     icon: Icons.sync,
     title: 'Sync',
-    titleColor: Colors.black,
+    //titleColor: Colors.black,
   );
   // 显示卡片
   runApp(
