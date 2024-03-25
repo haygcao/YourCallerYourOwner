@@ -55,7 +55,7 @@ class SubscriptionCard extends StatelessWidget {
               child: Column(
                 children: [
                   // 左上角的图标
-                  Row(
+
                     children: [
                       // 左上角图标背景
                       Container(
@@ -73,7 +73,7 @@ class SubscriptionCard extends StatelessWidget {
                         ),
                       ),
                     ],
-                  ),
+
                   // 右上角的菜单按钮
                   const Spacer(), // 占位符，使菜单按钮位于右上角
                   Container(
