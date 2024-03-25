@@ -29,9 +29,7 @@ static const BorderRadius borderRadius = BorderRadius.only(
 );
 }
 
-double getHomeBackgroundHeight(BuildContext context) {
-  return MediaQuery.of(context).size.height * 0.25;
-}
+const double kBackgroundRatio = 0.25;
 
 
   
@@ -52,9 +50,7 @@ const BoxDecoration rejectCallsBackgroundStyle = BoxDecoration(
   color: Color.fromRGBO(248, 91, 104, 1.0),
 );
 
-double getRejectCallsMaxWidth(BuildContext context) {
-  return MediaQuery.of(context).size.width * 0.83;
-}
+const double kRejectCallsMaxWidthRatio = 0.83;
 
 const double rejectCallsMinWidth = 343;
 
