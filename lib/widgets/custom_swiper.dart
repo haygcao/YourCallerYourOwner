@@ -44,6 +44,11 @@ class _CustomSwiperState extends State<CustomSwiper> {
   // 构建 Swiper 组件// 布局类型，设置为 CUSTOM 表示自定义布局
   @override
   Widget build(BuildContext context) {
+    int currentIndex = FirebaseRemoteConfig.getInt('current_index');
+
+    // 将 _currentIndex 变量的值设置为 current_index 配置项的值
+    _currentIndex = currentIndex;
+
     return Swiper(
       layout: SwiperLayout.CUSTOM,
       customLayoutOption: CustomLayoutOption(
