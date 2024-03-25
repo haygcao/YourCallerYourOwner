@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
             borderRadius: HomeBackgroundStyle.borderRadius,
             child: Container(
               color: HomeBackgroundStyle.backgroundColor,
-              height: HomeBackgroundSHeight,
+              height: getHomeBackgroundHeight(context),
             ),
           ),
           Container(
@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     decoration: rejectCallsBackgroundStyle,
                     constraints: BoxConstraints(
                       minWidth: rejectCallsMinWidth,
-                      maxWidth: rejectCallsMaxWidth,
+                      maxWidth: getRejectCallsMaxWidth(context),
                     ),
                     child: Row(
                       children: [
