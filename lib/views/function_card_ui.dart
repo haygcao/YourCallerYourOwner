@@ -24,6 +24,6 @@ class MenuIconStyle {
 class TextStyle {
   static const TextStyle textStyle = TextStyle(
     color: Colors.black,
-    fontSize: 14.0,
+    fontSize: 17.0,
   );
 }
