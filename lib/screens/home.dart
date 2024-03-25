@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:your_caller_your_owner/styles.dart';
+import 'package:screens/home_styles.dart';
 import 'package:your_caller_your_owner/subscription/subscription_card.dart';
 import 'package:your_caller_your_owner/contacts/contacts_card.dart';
 import 'package:your_caller_your_owner/whitelist/whitelist_card.dart';
@@ -48,14 +48,14 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           const Padding(
-            padding: EdgeInsets.only(top: 16, left: 16),
+            padding: HomePaddingStyle.paddingTop,
             child: Text(
               'Your Caller Your Owner',
               style: LogotitleTextStyle,
             ),
           ),
           const Padding(
-            padding: EdgeInsets.only(top: 16),
+            padding: HomePaddingStyle.searchBarPadding,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 const SizedBox(width: 16),
                 Padding(
-                  padding: EdgeInsets.only(top: 16, left: 16),
+                  padding: HomePaddingStyle.scanBarPadding,
                   child: ScanBar(),
                 ),
               ],
@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 16, left: 16),
+              padding: HomePaddingStyle.customSwiperPadding,
               child: CustomSwiper(),
             ),
           ),
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
             borderRadius: HomeBackgroundStyle.borderRadius,
             child: Container(
               color: HomeBackgroundStyle.backgroundColor,
-              height: screenHeight * 0.25,
+              height: HomeBackgroundSHeight,
             ),
           ),
           Container(
@@ -88,19 +88,18 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               children: [
                 const Padding(
-                  padding: EdgeInsets.only(top: 20, right: 8, bottom: 16, left: 8),
+                  padding: HomePaddingStyle.manageRulesPadding,
                   child: Text(
                     'Manage Rules',
                     style: subtitleTextStyle,
                   ),
                 ),
-                // ... other manage rules content
+
 
                 const Padding(
-                  padding: EdgeInsets.only(top: 20, right: 8, bottom: 16, left: 8),
+                  padding: HomePaddingStyle.rejectCallsPadding,
                   child: Container(
                     decoration: rejectCallsBackgroundStyle,
-                    padding: rejectCallsPaddingStyle,
                     constraints: BoxConstraints(
                       minWidth: rejectCallsMinWidth,
                       maxWidth: rejectCallsMaxWidth,
@@ -132,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(top: 4, right: 8, bottom: 16, left: 8),
+              padding: HomePaddingStyle.listViewPadding,
               child: ListView.builder(
                 itemCount: cards.length,
                 itemBuilder: (context, index) {
@@ -155,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: HomePaddingStyle.listViewHorizontalPadding,
                 separatorBuilder: (context, index) => const SizedBox(width: 8.0),
               ),
             ),
