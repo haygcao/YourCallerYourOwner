@@ -6,6 +6,11 @@ import 'package:your_caller_your_owner/whitelist/whitelist_card.dart';
 import 'package:your_caller_your_owner/blacklist/blacklist_card.dart';
 import 'package:your_caller_your_owner/wildcard/wildcard_card.dart';
 import 'package:your_caller_your_owner/sync/sync_card.dart';
+import 'package:widgets/home_cards.dart';
+import 'package:widgets/search_bar.dart';
+import 'package:widgets/scan_bar.dart';
+import 'package:widgets/custom_swiper.dart';
+import 'package:widgets/navigation_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -137,34 +142,26 @@ GestureDetector(
               ],
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 6, // 这里设置卡片数量
-              itemBuilder: (context, index) {
-                switch (index) {
-                  case 0:
-                    return SubscriptionCard();
-                  case 1:
-                    return ContactsCard();
-                  case 2:
-                    return WhitelistCard();
-                  case 3:
-                    return BlacklistCard();
-                  case 4:
-                    return WildcardCard();
-                  case 5:
-                    return SyncCard();
-                  default:
-                    return Container();
-                }
-              },
-              scrollDirection: Axis.horizontal, // 横向排列
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              separatorBuilder: (context, index) {
-                return const SizedBox(width: 16.0);
-              },
-            ),
+Expanded(
+  child: ListView.builder(
+    itemCount: cards.length, // Use the length of the cards list
+    itemBuilder: (context, index) {
+      final card = cards[index]; // Access the card from the list
+      return GestureDetector(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => card.page,
           ),
+        ),
+        child: card,
+      );
+    },
+    scrollDirection: Axis.horizontal,
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    separatorBuilder: (context, index) => const SizedBox(width: 16.0),
+  ),
+),
         ],
       ),
       bottomNavigationBar: const NavigationBar
