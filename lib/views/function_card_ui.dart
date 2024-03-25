@@ -23,7 +23,7 @@ class MenuIconStyle {
 }
 class TextStyle {
   static const TextStyle textStyle = TextStyle(
-    color: Colors.white,
+    color: Colors.black,
     fontSize: 14.0,
   );
 }
