@@ -10,7 +10,6 @@ class FunctionCard extends StatelessWidget {
     required this.iconBackgroundColor,  
     required this.icon,
     required this.title,
-    required this.titleColor,
   });
 
   final Widget page;
@@ -19,7 +18,6 @@ class FunctionCard extends StatelessWidget {
   final Color iconBackgroundColor;
   final IconData icon;
   final String title;
-  final Color titleColor;
 
   @override
   Widget build(BuildContext context) {
@@ -53,20 +51,15 @@ class FunctionCard extends StatelessWidget {
               // 使用 LinearGradient 创建线性渐变色
               gradient: LinearGradient(
                 colors: [
-                  startColor, // 起始颜色
-                  endColor, // 结束颜色
+                  this.startColor, // 起始颜色
+                  this.endColor, // 结束颜色
                 ],
                 begin: Alignment.topLeft, // 渐变开始位置
                 end: Alignment.bottomRight, // 渐变结束位置
               ),
               borderRadius: BorderRadius.circular(16.0), // 卡片背景形状
               boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1.0, // 阴影扩散半径
-                  blurRadius: 4.0, // 阴影模糊半径
-                  offset: Offset(0.0, 2.0), // 阴影偏移量
-                ),
+                CardStyle.shadow,
               ],
             ),
 
@@ -83,13 +76,13 @@ class FunctionCard extends StatelessWidget {
                         width: 32.0,
                         height: 32.0,
                         decoration: BoxDecoration(
-                          color: iconBackgroundColor, // 图标背景颜色
+                          color: this.iconBackgroundColor, // 图标背景颜色
                           borderRadius: BorderRadius.circular(16.0), // 图标背景形状
                         ),
                         child: Icon(
-                          icon, // 图标
-                          color: Colors.black,
-                          size: 24.0,
+                          this.icon, // 图标
+                          color: IconStyle.iconColor,
+                          size: IconStyle.iconSize,
                         ),
                       ),
                     ],
@@ -100,8 +93,8 @@ class FunctionCard extends StatelessWidget {
                     margin: CardStyle.menuPadding, // 菜单按钮顶部和右侧边距
                     child: Icon(
                       Icons.more_vert,
-                      color: Colors.grey,
-                      size: 24.0,
+                      color: MenuIconStyle.menuIconColor,
+                      size: MenuIconStyle.menuIconSize,
                     ),
                   ),
 
@@ -109,11 +102,8 @@ class FunctionCard extends StatelessWidget {
                   Container(
                     margin: CardStyle.textPadding, // 文字底部和左侧边距
                     child: Text(
-                      title, // 文本
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: titleColor,
-                      ),
+                      this.title, // 文本
+                      style: TextStyle.textStyle,
                     ),
                   ),
                 ],
