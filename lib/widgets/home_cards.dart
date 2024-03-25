@@ -1,8 +1,11 @@
 // 导入 function_card.dart 文件
 import 'function_card.dart';
-import 'subscription_page.dart'; // Import the subscription page class
-import 'contacts_page.dart';    // Import the contacts page class
-
+import 'subscription_page.dart';
+import 'contacts_page.dart';
+import 'whitelist_page.dart'; // Assuming this is the correct class name
+import 'blacklist_page.dart';
+import 'wildcard_page.dart';
+import 'sync_page.dart';
 
 void main() {
   // 创建 6 个卡片实例
