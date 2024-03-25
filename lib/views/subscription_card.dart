@@ -72,15 +72,6 @@ class SubscriptionCard extends StatelessWidget {
                           size: 24.0,
                         ),
                       ),
-                      SizedBox(width: 8.0), // 图标和文字之间的间距
-                      Text(
-                        'Subscription',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
                     ],
                   ),
                   // 右上角的菜单按钮
