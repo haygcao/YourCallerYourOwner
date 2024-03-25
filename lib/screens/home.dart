@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_query/media_query.dart';
 import 'package:screens/home_styles.dart';
 import 'package:your_caller_your_owner/subscription/subscription_card.dart';
 import 'package:your_caller_your_owner/contacts/contacts_card.dart';
