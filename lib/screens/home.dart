@@ -12,6 +12,7 @@ import 'package:widgets/search_bar.dart';
 import 'package:widgets/scan_bar.dart';
 import 'package:widgets/custom_swiper.dart';
 import 'package:widgets/navigation_bar.dart';
+import 'package:utils/call_filter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -114,11 +115,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         const Spacer(),
                         GestureDetector(
                           onTap: () {
-                            // Handle switch tap event
+                            // Handle switch tap event (update allowAllBlacklistedNumbers)
+                            setState(() {
+                              allowAllBlacklistedNumbers = !allowAllBlacklistedNumbers;
+                            });
                           },
                           child: Switch(
-                            value: false,
-                            onChanged: (value) {},
+                            value: allowAllBlacklistedNumbers, // Use the imported variable
+                            onChanged: (value) {}, // Update the onChanged callback if needed
                             style: switchStyle,
                             thumbIcon: thumbIcon,
                           ),
