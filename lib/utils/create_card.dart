@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:widgets/home_cards.dart';
+import 'package:utils/page_title.dart';
+
 // 通用函数：根据页面名称创建卡片
 FunctionCard createCard(String pageName) {
   // 获取页面信息
