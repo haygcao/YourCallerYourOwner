@@ -21,9 +21,6 @@ class MenuIconStyle {
   static const double menuIconSize = 24.0; // 图标尺寸
   );
 }
-class TextStyle {
-  static const TextStyle textStyle = TextStyle(
-    color: Colors.black,
-    fontSize: 17.0,
-  );
+class TextSizeStyle {
+  static const double fontSize = 17.0; // 文本尺寸
 }
