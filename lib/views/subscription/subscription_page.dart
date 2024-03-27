@@ -312,38 +312,76 @@ class MyApp extends StatelessWidget {
 
                           @override
                           Widget build(BuildContext context) {
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    initialValue: _subscription.name,
-                                    decoration: InputDecoration(labelText: 'Name'),
-                                    // Update subscription name on _subscription change
-                                    onChanged: (value) => setState(() => _subscription = _subscription.copyWith(name: value)),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: TextFormField(
-                                    initialValue: _subscription.url,
-                                    decoration: InputDecoration(labelText: 'URL'),
-                                    // Update subscription URL on _subscription change
-                                    onChanged: (value) => setState(() => _subscription = _subscription.copyWith(url: value)),
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                ElevatedButton(
-                                  child: Text('Open Local Folder'),
-                                  onPressed: () async {
-                                    // Get the app's documents directory
-                                    final directory = await getApplicationDocumentsDirectory();
+Row(
+  children: [
+    SizedBox(
+      width: 120.0,
+      height: 40.0,
+      child: TextFormField(
+        initialValue: _subscription.name,
+        decoration: InputDecoration(
+          labelText: 'Name',
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          labelStyle: TextStyle(fontSize: 16.0),
+        ),
+        style: TextStyle(fontSize: 16.0),
+        // Update subscription name on _subscription change
+        onChanged: (value) => setState(() => _subscription = _subscription.copyWith(name: value)),
+      ),
+    ),
+    SizedBox(width: 10.0),
+    SizedBox(
+      width: 120.0,
+      height: 40.0,
+      child: TextFormField(
+        initialValue: _subscription.url,
+        decoration: InputDecoration(
+          labelText: 'URL',
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          labelStyle: TextStyle(fontSize: 16.0),
+        ),
+        style: TextStyle(fontSize: 16.0),
+        // Update subscription URL on _subscription change
+        onChanged: (value) => setState(() => _subscription = _subscription.copyWith(url: value)),
+      ),
+    ),
+    SizedBox(width: 10.0),
+    SizedBox(
+      width: 120.0,
+      height: 40.0,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.blue,
+          onPrimary: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          minimumSize: Size(120.0, 40.0),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Icon(Icons.folder_open),
+            SizedBox(width: 8.0),
+            Text('Open Local Folder'),
+          ],
+        ),
+        onPressed: () async {
+          // Get the app's documents directory
+          final directory = await getApplicationDocumentsDirectory();
 
-                                    // Open the subscription directory in the file manager
-                                    await launch('file://${directory.path}/subscriptions');
-                                  },
-                                ),
-                              ],
-                            );
+          // Open the subscription directory in the file manager
+          await launch('file://${directory.path}/subscriptions');
+        },
+      ),
+    ),
+  ],
+)
+                            
                           }
+                          
                         }
 
                         // Function to build the subscription list
