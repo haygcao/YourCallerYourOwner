@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
             AspectRatio(
               aspectRatio: 3.1 / 2,
               child: createCard('SubscriptionPage'),
-            ),
+            ).padding(EdgeInsets.only(top: 16)).align(Alignment.centerHorizontally),
 
             // Row for export, add, import buttons
  Padding(
@@ -152,7 +152,7 @@ Widget _buildSubscriptionList() {
   );
 }
 
-import 'package:flutter/material.dart';
+
 
 Widget _buildSubscriptionItem(Subscription subscription) {
   return ListTile(
@@ -242,41 +242,59 @@ void _showMoreOptions(BuildContext context, Subscription subscription) {
         // Divider
         Divider(height: 1),
         SizedBox(height: 10),
-        // Blacklist/Whitelist options
-        ListTile(
-          title: Text('加入/移除白名单'),
-          onTap: () {
-            // Toggle whitelist based on current state
-            subscription.isWhitelist = !subscription.isWhitelist;
-            
-            // Update blacklist if whitelist takes priority
-            if (subscription.isWhitelist) {
-              subscription.isBlacklist = false;
-            }
-
-            // Update subscription in database
-            SubscriptionService.instance.updateSubscription(subscription);
-          },
-        ),
-        ListTile(
-          title: Text('加入/移除黑名单'),
-          onTap: () {
-            // Toggle blacklist based on current state
-            subscription.isBlacklist = !subscription.isBlacklist;
-
-            // Update whitelist if blacklist takes priority (assuming whitelist takes priority)
-            if (subscription.isBlacklist) {
-              subscription.isWhitelist = false;
-            }
-
-            // Update subscription in database
-            SubscriptionService.instance.updateSubscription(subscription);
-          },
+        // Blacklist/Whitelist options with adjusted padding
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Whitelist switch on the left with top and left padding
+            Switch(
+              contentPadding: EdgeInsets.only(top: 16, left: 16),
+              value: subscription.isWhitelist,
+              style: shieldSwitchStyle, // Apply the defined shieldSwitchStyle
+              child: Text(
+                '加入/移除白名单',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+              ), // Add Text widget with size and color properties
+              onChanged: (value) {
+                subscription.isWhitelist = value;
+                // Update blacklist if whitelist takes priority
+                if (subscription.isWhitelist) {
+                  subscription.isBlacklist = false;
+                }
+                SubscriptionService.instance.updateSubscription(subscription);
+              },
+            ),
+            // Blacklist switch on the right with top and right padding
+            Switch(
+              contentPadding: EdgeInsets.only(top: 16, right: 16),
+              value: subscription.isBlacklist,
+              style: shieldSwitchStyle, // Apply the defined shieldSwitchStyle
+              child: Text(
+                '加入/移除黑名单',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+              ), // Add Text widget with size and color properties
+              onChanged: (value) {
+                subscription.isBlacklist = value;
+                // Update whitelist if blacklist takes priority (assuming whitelist takes priority)
+                if (subscription.isBlacklist) {
+                  subscription.isWhitelist = false;
+                }
+                SubscriptionService.instance.updateSubscription(subscription);
+              },
+            ),
+          ],
         ),
       ],
     ),
   );
 }
+
 // Stateful widget to manage subscription name and URL
 class _SubscriptionNameAndUrl extends StatefulWidget {
   final Subscription subscription;
