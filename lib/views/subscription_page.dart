@@ -369,28 +369,89 @@ class MyApp extends StatelessWidget {
 
                         Divider(height: 1),
                         const Spacer(),
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.delete),
-                              onPressed: () {
-                                _deleteSubscription(context, subscription);
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.update),
-                              onPressed: () {
-                                _startAutoUpdate(subscription);
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.save),
-                              onPressed: () {
-                                _saveSubscription(subscription);
-                              },
-                            ),
-                          ],
-                        ),
+Row(
+  children: [
+    SizedBox(
+      width: 120.0,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.blue,
+          onPrimary: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        onPressed: () {
+          _deleteSubscription(context, subscription);
+        },
+        child: Row(
+          children: [
+            Icon(Icons.delete, color: Colors.red, size: 24.0), // Set icon size
+            SizedBox(width: 8.0),
+            Text(
+              'Delete',
+              style: TextStyle(fontSize: 16.0, color: Colors.white), // Set text size and color
+            ),
+          ],
+        ),
+      ),
+    ),
+    SizedBox(width: 16.0),
+    SizedBox(
+      width: 120.0,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.blue,
+          onPrimary: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        onPressed: () {
+          _startAutoUpdate(subscription);
+        },
+        child: Row(
+          children: [
+            Icon(Icons.update, size: 24.0),
+            SizedBox(width: 8.0),
+            Text(
+              'Update',
+              style: TextStyle(fontSize: 16.0, color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    ),
+    SizedBox(width: 16.0),
+    SizedBox(
+      width: 120.0,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.blue,
+          onPrimary: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        onPressed: () {
+          _saveSubscription(subscription);
+        },
+        child: Row(
+          children: [
+            Icon(Icons.save),
+            SizedBox(width: 8.0),
+            Text(
+              'Save',
+              style: TextStyle(fontSize: 16.0, color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ],
+),
+
+                        
                       ],
                     ),
                   ),
