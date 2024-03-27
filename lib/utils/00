@@ -1,0 +1,20 @@
+void main() {
+  // 创建 SubscriptionPage 卡片
+  var subscriptionCard = createCard('SubscriptionPage');
+
+  // 显示新的卡片
+  runApp(
+    MaterialApp(
+      home: Scaffold(
+        body: Column(
+          children: [
+            AspectRatio(
+              aspectRatio: 3.1 / 2, // 设置卡片的宽高比为 3.1:2
+              child: subscriptionCard,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
