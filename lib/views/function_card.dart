@@ -10,6 +10,7 @@ class FunctionCard extends StatelessWidget {
     required this.iconBackgroundColor,  
     required this.icon,
     required this.title,
+    required this.titleColor,    
   });
 
   final Widget page;
@@ -18,6 +19,7 @@ class FunctionCard extends StatelessWidget {
   final Color iconBackgroundColor;
   final IconData icon;
   final String title;
+  final Color titleColor;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +105,10 @@ class FunctionCard extends StatelessWidget {
                     margin: CardStyle.textPadding, // 文字底部和左侧边距
                     child: Text(
                       this.title, // 文本
-                      style: TextStyle.textStyle,
+                      style: TextStyle(
+                        fontSize: TextSizeStyle.fontSize,
+                        color: this.titleColor,
+                      ),
                     ),
                   ),
                 ],
