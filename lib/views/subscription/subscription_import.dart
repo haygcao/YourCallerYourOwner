@@ -161,39 +161,30 @@ class _ImportSubscriptionsPageState extends State<ImportSubscriptionsPage> {
               Expanded(
                 child: ElevatedButton(
                   child: Text('导入'),
-                  onPressed: () {
-                    // 检查用户是否输入了 URL 或选择了文件
-                    if (_urlController.text.isEmpty && result == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('请选择要导入的订阅'),
-                        ),
-                      );
-                      return;
-                    }
+onPressed: () {
 
-                    // 导入订阅
-                    String inputText = _urlController.text;
 
-                    // 判断输入的是否是 URL
-                    if (_isUrl(inputText)) {
-                      // 检查链接有效性
-                      if (!_isUrlValid(inputText)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('无效的 URL'),
-                          ),
-                        );
-                        return;
-                      }
+  // 检查 URL 和本地文件
+  if (_urlController.text.isNotEmpty) {
+    // 检查 URL 是否正确
+    if (!isUrlValid(_urlController.text)) {
+      showErrorSnackBar(context, "URL 格式不正确");
+      return;
+    }
+  } else if (result == null) {
+    // 提示用户二选一
+    showErrorSnackBar(context, "请选择文件或输入 URL");
+    return;
+  }
 
-                      // 从 URL 导入订阅
-                      importSubscriptionsFromUrl(inputText);
-                    } else {
-                      // 从本地文件导入订阅
-                      importSubscriptionsFromFile(inputText);
-                    }
-                  },
+
+  // 导入订阅
+  if (_urlController.text.isNotEmpty) {
+    importSubscriptionsFromUrl(_urlController.text);
+  } else {
+    importSubscriptionsFromFile(result.files.single.path);
+  }
+},
                   style: addButtonStyle,
                 ),
               ),
