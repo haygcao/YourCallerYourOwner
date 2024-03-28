@@ -10,7 +10,11 @@ class ExportSubscriptionsPage extends StatefulWidget {
   @override
   _ExportSubscriptionsPageState createState() => _ExportSubscriptionsPageState();
 }
-
+class _ExportSubscriptionsPageState extends State<ExportSubscriptionsPage> {
+  final _subscriptions = <Subscription>[];
+  String? _filePath;
+  String _selectedType = 'csv'; // Default export format (CSV)
+  
 class _ExportSubscriptionsPageState extends State<ExportSubscriptionsPage> {
   final _subscriptions = <Subscription>[];
   String? _filePath;
@@ -19,65 +23,81 @@ class _ExportSubscriptionsPageState extends State<ExportSubscriptionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('导出订阅'),
+        title: Text('ExportSubscriptions'),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
-              // 选择订阅按钮
-GestureDetector(
-  child: Container(
-    decoration: inputBoxDecoration,
-    child: Row(
-      children: <Widget>[
-        EdgeInsets.only(left: 16.0),
-        Icon(
-          Icons.Search,
-          style: iconTextStyle,
-        ),
-        SizedBox(width: 16.0),
-        Text(
-          '选择要导出的订阅',
-          style: inputTextStyle,
-        ),
-      ],
-    ),
-  ),
-  onTap: () async {
-    // 显示选择订阅的弹出窗口
-    List<Subscription> selectedSubscriptions = await _selectSubscriptions();
+              // Search bar for subscriptions
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Search  subscriptions',
+                ),
+                onChanged: (value) {
+                  // Implement search logic to filter subscriptions based on name
+                },
+              ),
 
-    // 将选定的订阅更新到页面上
-    setState(() {
-      _subscriptions.clear();
-      _subscriptions.addAll(selectedSubscriptions);
-    });
-  },
-),
+              SizedBox(height: 16.0),
 
-              // 导出文件路径
+              // Select subscriptions button
               GestureDetector(
                 child: Container(
                   decoration: inputBoxDecoration,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      EdgeInsets.only(left: 16.0),
-                      Icon(
-                        Icons.folder,
-                        style: iconTextStyle,
-                      ),
-                      SizedBox(width: 16.0),
                       Text(
-                        _filePath ?? '选择导出文件夹',
+                        'Select subscriptions to export',
                         style: inputTextStyle,
+                      ),                      
+                      EdgeInsets.only(left: 16.0),
+                      Icon(Icons.Search, style: iconTextStyle),
+                     ],
+                  ),
+                ),
+                onTap: () async {
+                  // Show select subscriptions popup
+                  List<Subscription> selectedSubscriptions =
+                      await Navigator.push<List<Subscription>>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SelectSubscriptionsPage(
+                        subscriptions: _subscriptions, // Pass subscriptions to popup
                       ),
+                    ),
+                  );
+
+                  // Update subscriptions list
+                  setState(() {
+                    _subscriptions.clear();
+                    _subscriptions.addAll(selectedSubscriptions);
+                  });
+                },
+              ),
+
+              SizedBox(height: 16.0),
+
+              // Export file path
+              GestureDetector(
+                child: Container(
+                  decoration: inputBoxDecoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        _filePath ?? 'selecting export folder',
+                        style: inputTextStyle,
+                      ),                      
+                      EdgeInsets.only(left: 16.0),
+                      Icon(Icons.folder, style: iconTextStyle),
                     ],
                   ),
                 ),
                 onTap: () async {
-                  // 打开本地文件夹
+                  // Open file picker for selecting export directory
                   FilePickerResult? result = await FilePicker.platform.pickFiles(
                     type: FileType.any,
                   );
@@ -91,13 +111,48 @@ GestureDetector(
               ),
 
               SizedBox(height: 16.0),
+              // Select export format (optional)
+              GestureDetector(
+                child: Container(
+                  decoration: inputBoxDecoration,         
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+        Text('export format:', style: inputTextStyle),
+        DropdownButtonTheme(
+          data: _dropdownThemeData,
+          child: DropdownButton<String>(
+            value: _selectedType,
+            items: [
+              DropdownMenuItem(
+                value: 'csv',
+                child: Text('CSV'),
+              ),
+              DropdownMenuItem(
+                value: 'json',
+                child: Text('JSON'),
+              ),
+            ],
+            onChanged: (value) {
+              setState(() {
+                _selectedType = value!;
+              });
+            },
+          ),
+        ),
+      ],
+    ),
+  ),
+),
 
+             
+             SizedBox(height: 16.0),
               // 导出按钮
               ElevatedButton(
                 child: Text('导出'),
                 onPressed: () async {
                   if (_filePath == null || _filePath!.isEmpty) {
-                    SnackbarService.showSnackbar(context, '请选择导出文件夹');
+                    showErrorSnackBar(context, '请选择导出文件夹');
                     return;
                   }
 
@@ -106,14 +161,22 @@ GestureDetector(
                     return;
                   }
 
-                  // 导出订阅
-                  bool success = await SubscriptionService.exportSubscriptions(
-                    _subscriptions,
-                    _filePath!,
-                  );
+                  // Export subscriptions based on selected format
+                  bool success = false;
+                  switch (_selectedType) {
+                    case 'csv':
+                      success = await SubscriptionService.exportSubscriptionsToCsv(
+                          _subscriptions, _filePath!);
+                      break;
+                    case 'json':
+                      success = await SubscriptionService.exportSubscriptionsToJson(
+                          _subscriptions, _filePath!);
+                      break;
+                    // Add additional cases for other formats
+                  }
 
                   if (success) {
-                    showErrorSnackBar(context, '导出成功');
+                    showSuccessSnackBar(context, '导出成功');
                   } else {
                     showErrorSnackBar(context, '导出失败');
                   }
@@ -126,66 +189,6 @@ GestureDetector(
       ),
     );
   }
-
-  Future<List<Subscription>> _selectSubscriptions() async {
-    // 显示订阅选择页面
-    List<Subscription> selectedSubscriptions = await Navigator.push<List<Subscription>>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SelectSubscriptionsPage(),
-      ),
-    );
-
-    return selectedSubscriptions;
-  }
 }
-Future<String?> _selectExportFormat() async {
-  // 显示选择导出格式对话框
-  return await showDialog<String>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('选择导出格式'),
-      content: Column(
-        children: <Widget>[
-          RadioListTile(
-            value: 'csv',
-            title: Text('CSV'),
-            groupValue: _selectedType,
-            onChanged: (value) {
-              setState(() {
-                _selectedType = value;
-              });
-            },
-          ),
-          RadioListTile(
-            value: 'json',
-            title: Text('JSON'),
-            groupValue: _selectedType,
-            onChanged: (value) {
-              setState(() {
-                _selectedType = value;
-              });
-            },
-          ),
-        ],
-      ),
-      actions: <Widget>[
-        TextButton(
-          child: Text('取消'),
-          onPressed: () => Navigator.pop(context),
-        ),
-        ElevatedButton(
-          child: Text('保存'),
-          onPressed: () {
-            Navigator.pop(context, _selectedType);
-          },
-        ),
-      ],
-    ),
-  );
-}
-// 显示成功提示
-showSuccessSnackBar(
-  message: '导出成功！',
-);
+
 
