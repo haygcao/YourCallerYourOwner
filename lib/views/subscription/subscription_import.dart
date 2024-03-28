@@ -51,51 +51,44 @@ class _ImportSubscriptionsPageState extends State<ImportSubscriptionsPage> {
               ),
               // 打开本地文件夹
               SizedBox(height: 16.0),
-GestureDetector(
-  child: Container(
-    decoration: inputBoxDecoration,
-    child: Row(
-      children: <Widget>[
-        // 设置图标位置
-        EdgeInsets.only(left: 16.0),
-        Icon(
-          Icons.folder,
-          style: iconTextStyle,
-        ),
-        // 设置文字间距
-        SizedBox(width: 16.0),
-        Text(
-          '打开本地文件夹',
-          style: inputTextStyle,
-        ),
-      ],
-    ),
-  ),
-  // 设置点击区域为整个容器区域
-  hitTestBehavior: HitTestBehavior.opaque,
-  onTap: () async {
-    // 打开本地文件夹
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
-    );
+              GestureDetector(
+                child: Container(
+                  decoration: inputBoxDecoration,
+                  child: Row(
+                    children: <Widget>[
+                      // 设置图标位置
+                      EdgeInsets.only(left: 16.0),
+                      Icon(
+                        Icons.folder,
+                        style: iconTextStyle,
+                      ),
+                      // 设置文字间距
+                      SizedBox(width: 16.0),
+                      Text(
+                        '打开本地文件夹',
+                        style: inputTextStyle,
+                      ),
+                    ],
+                  ),
+                ),
+                // 设置点击区域为整个容器区域
+                hitTestBehavior: HitTestBehavior.opaque,
+                onTap: () async {
+                  // 打开本地文件夹
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(
+                    type: FileType.any,
+                  );
 
-    // 检查用户是否选择了文件
-    if (result != null && result.files.single != null) {
-      String filePath = result.files.single.path;
+                  // 检查用户是否选择了文件
+                  if (result != null && result.files.single != null) {
+                    String filePath = result.files.single.path;
 
-      // 根据文件类型解析数据
-
-      if (_isCsvFile(filePath)) {
-        importSubscriptionsFromFile(filePath);
-      } else if (_isJsonFile(filePath)) {
-        importSubscriptionsFromFile(filePath);
-      } else {
-        throw Exception('Invalid file format');
-      }
-    }
-  },
-),
-                            SizedBox(height: 16.0),              
+                    // 调用 service 中的函数检查文件格式和解析数据
+                    importSubscriptionsFromFile(filePath);
+                  }
+                },
+              ),
+              SizedBox(height: 16.0),     
               // 白名单和黑名单
               Column(
                 children: <Widget>[
@@ -165,23 +158,45 @@ GestureDetector(
                 ],
               ),
                   SizedBox(width: 16.0),
-                  Expanded(
-                    child: ElevatedButton(
-                      child: Text('导入'),
-                      onPressed: () {
-                        // 导入订阅
-                        String inputText = _urlController.text;
+              Expanded(
+                child: ElevatedButton(
+                  child: Text('导入'),
+                  onPressed: () {
+                    // 检查用户是否输入了 URL 或选择了文件
+                    if (_urlController.text.isEmpty && result == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('请选择要导入的订阅'),
+                        ),
+                      );
+                      return;
+                    }
 
-                        // 判断输入的是否是url
-                        if (_isUrl(inputText)) {
-                          importSubscriptionsFromUrl(inputText);
-                        } else {
-                          importSubscriptionsFromFile(inputText);
-                        }
-                      },
-                      style: addButtonStyle,
-                    ),
-                  ),
+                    // 导入订阅
+                    String inputText = _urlController.text;
+
+                    // 判断输入的是否是 URL
+                    if (_isUrl(inputText)) {
+                      // 检查链接有效性
+                      if (!_isUrlValid(inputText)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('无效的 URL'),
+                          ),
+                        );
+                        return;
+                      }
+
+                      // 从 URL 导入订阅
+                      importSubscriptionsFromUrl(inputText);
+                    } else {
+                      // 从本地文件导入订阅
+                      importSubscriptionsFromFile(inputText);
+                    }
+                  },
+                  style: addButtonStyle,
+                ),
+              ),
             ],
           ),
         ),
