@@ -54,3 +54,16 @@ final ButtonStyle addButtonStyle = ButtonStyle(
   backgroundColor: MaterialStateProperty.all(Colors.blue),
   foregroundColor: MaterialStateProperty.all(Colors.white),
 );
+const _dropdownThemeData = DropdownButtonThemeData(
+  backgroundColor: Colors.white,
+  elevation: 8.0,
+  borderRadius: BorderRadius.circular(8.0),
+  padding: EdgeInsets.all(16.0),
+  icon: Icon(Icons.arrow_drop_down),
+  iconSize: 24.0,
+  hint: Text('请选择'),
+  dropdownColor: Colors.white,
+  underline: SizedBox(),
+  selectedColor: Colors.blue,
+  disabledColor: Colors.grey,
+);
