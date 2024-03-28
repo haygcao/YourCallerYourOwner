@@ -31,7 +31,24 @@ class _SelectSubscriptionsPageState extends State<SelectSubscriptionsPage> {
                   style: inputTextStyle,
                 ),
               ),
-
+              // Select all checkbox
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Checkbox(
+                    value: _isSelectAll,
+                    onChanged: (value) {
+                      setState(() {
+                        _isSelectAll = value!;
+                        for (var subscription in _subscriptions) {
+                          subscription.isSelected = value;
+                        }
+                      });
+                    },
+                  ),
+                  Text('Select All'),
+                ],
+              ),
               // 选项卡
               TabBar(
                 tabs: <Widget>[
@@ -41,61 +58,62 @@ class _SelectSubscriptionsPageState extends State<SelectSubscriptionsPage> {
                 ],
               ),
 
-              // 选项卡内容
+              // Tab bar view
               TabBarView(
                 children: <Widget>[
-                  // 全部
+                  // All
                   ListView.builder(
                     itemCount: _subscriptions.length,
                     itemBuilder: (context, index) {
+                      final subscription = _subscriptions[index];
                       return CheckboxListTile(
-                        value: _subscriptions[index].isSelected,
+                        value: _isSelectAll || subscription.isSelected,
                         onChanged: (value) {
                           setState(() {
-                            _subscriptions[index].isSelected = value;
+                            subscription.isSelected = value!;
                           });
                         },
-                        title: Text(_subscriptions[index].name),
+                        title: Text(subscription.name),
                       );
                     },
                   ),
 
-                  // 白名单
+                  // Whitelist
                   ListView.builder(
                     itemCount: _subscriptions.length,
                     itemBuilder: (context, index) {
-                      if (_subscriptions[index].isWhitelisted) {
+                      final subscription = _subscriptions[index];
+                      if (subscription.isWhitelisted) {
                         return CheckboxListTile(
-                          value: _subscriptions[index].isSelected,
+                          value: _isSelectAll || subscription.isSelected,
                           onChanged: (value) {
                             setState(() {
-                              _subscriptions[index].isSelected = value;
+                              subscription.isSelected = value!;
                             });
                           },
-                          title: Text(_subscriptions[index].name),
+                          title: Text(subscription.name),
                         );
                       }
-
                       return Container();
                     },
                   ),
 
-                  // 黑名单
+                  // Blacklist
                   ListView.builder(
                     itemCount: _subscriptions.length,
                     itemBuilder: (context, index) {
-                      if (_subscriptions[index].isBlacklisted) {
+                      final subscription = _subscriptions[index];
+                      if (subscription.isBlacklisted) {
                         return CheckboxListTile(
-                          value: _subscriptions[index].isSelected,
+                          value: _isSelectAll || subscription.isSelected,
                           onChanged: (value) {
                             setState(() {
-                              _subscriptions[index].isSelected = value;
+                              subscription.isSelected = value!;
                             });
                           },
-                          title: Text(_subscriptions[index].name),
+                          title: Text(subscription.name),
                         );
                       }
-
                       return Container();
                     },
                   ),
