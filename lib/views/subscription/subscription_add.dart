@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:view/shield_switch_style.dart';
 import 'package:view/subpage_style.dart';
-
+import 'package:service/subscription_service.dart';
 class AddSubscriptionPage extends StatefulWidget {
   @override
   _AddSubscriptionPageState createState() => _AddSubscriptionPageState();
@@ -236,6 +236,15 @@ GestureDetector(
               ElevatedButton(
                 child: Text('添加'),
                 onPressed: () {
+                      // 检查订阅名称和订阅链接是否有效
+
+    if (_subscriptionNameController.text.isEmpty) {
+      return;
+    }
+
+    if (_urlController.text.isEmpty) {
+      return;
+    }
                   // 添加订阅
                   addSubscriptionName(Subscription(), _subscriptionNameController.text);
 
