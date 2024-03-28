@@ -54,6 +54,7 @@ final ButtonStyle addButtonStyle = ButtonStyle(
   backgroundColor: MaterialStateProperty.all(Colors.blue),
   foregroundColor: MaterialStateProperty.all(Colors.white),
 );
+ // 添加下拉菜单的样式
 const _dropdownThemeData = DropdownButtonThemeData(
   backgroundColor: Colors.white,
   elevation: 8.0,
@@ -67,3 +68,17 @@ const _dropdownThemeData = DropdownButtonThemeData(
   selectedColor: Colors.blue,
   disabledColor: Colors.grey,
 );
+ // 添加tab bar view的样式
+class SubscriptionPageStyles {
+  static const TextStyle tabLabelStyle = TextStyle(
+    fontSize: 16.0,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const Color tabBarBackgroundColor = Colors.grey[200];
+  static const Color selectedTabLabelColor = Colors.blue;
+  static const Color unselectedTabLabelColor = Colors.black;
+
+  static const EdgeInsets tabBarPadding = EdgeInsets.symmetric(horizontal: 16.0);
+  static const EdgeInsets tabViewPadding = EdgeInsets.all(16.0);
+}
