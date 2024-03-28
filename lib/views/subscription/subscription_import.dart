@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:view/shield_switch_style.dart';
 import 'package:view/subpage_style.dart';
+import 'package:service/subscription_service.dart';
 
 class ImportSubscriptionsPage extends StatefulWidget {
   @override
