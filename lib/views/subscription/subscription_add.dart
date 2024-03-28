@@ -58,51 +58,43 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
               SizedBox(height: 16.0),
               
 
-              // 打开本地文件夹
-GestureDetector(
-  child: Container(
-    decoration: inputBoxDecoration,
-    child: Row(
-      children: <Widget>[
-        // 设置图标位置
-        EdgeInsets.only(left: 16.0),
-        Icon(
-          Icons.folder,
-          style: iconTextStyle,
-        ),
-        // 设置文字间距
-        SizedBox(width: 16.0),
-        Text(
-          '打开本地文件夹',
-          style: inputTextStyle,
-        ),
-      ],
-    ),
-  ),
+              // 打开本地文件夹按钮
+              SizedBox(height: 16.0),
+              GestureDetector(
+                child: Container(
+                  decoration: inputBoxDecoration,
+                  child: Row(
+                    children: <Widget>[
+                      EdgeInsets.only(left: 16.0),
+                      Icon(
+                        Icons.folder,
+                        style: iconTextStyle,
+                      ),
+                      SizedBox(width: 16.0),
+                      Text(
+                        '打开本地文件夹',
+                        style: inputTextStyle,
+                      ),
+                    ],
+                  ),
+                ),
   // 设置点击区域为整个容器区域
-  hitTestBehavior: HitTestBehavior.opaque,
-  onTap: () async {
-    // 打开本地文件夹
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
-    );
+                onTap: () async {
+                  // 打开本地文件夹
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(
+                    type: FileType.any,
+                  );
 
-    // 检查用户是否选择了文件
-    if (result != null && result.files.single != null) {
-      String filePath = result.files.single.path;
+                  // 检查用户是否选择了文件
+                  if (result != null && result.files.single != null) {
+                    String filePath = result.files.single.path;
 
-      // 根据文件类型解析数据
-
-      if (_isCsvFile(filePath)) {
-        importSubscriptionsFromFile(filePath);
-      } else if (_isJsonFile(filePath)) {
-        importSubscriptionsFromFile(filePath);
-      } else {
-        throw Exception('Invalid file format');
-      }
-    }
-  },
-),
+                    // 调用 service 中的函数检查文件格式和解析数据
+                    importSubscriptionsFromFile(filePath);
+                  }
+                },
+              ),
+              
               SizedBox(height: 16.0),              
               // 白名单和黑名单
               Column(
@@ -177,13 +169,13 @@ GestureDetector(
                 onPressed: () {
                       // 检查订阅名称和订阅链接是否有效
 
-    if (_subscriptionNameController.text.isEmpty) {
-      return;
-    }
+                    if (_subscriptionNameController.text.isEmpty) {
+                      return;
+                    }
 
-    if (_urlController.text.isEmpty) {
-      return;
-    }
+                   if (_urlController.text.isEmpty) {
+                    return;
+                   }
                   // 添加订阅
                   addSubscriptionName(Subscription(), _subscriptionNameController.text);
 
