@@ -61,11 +61,10 @@ class _ImportSubscriptionsPageState extends State<ImportSubscriptionsPage> {
                         '打开本地文件夹',
                         style: inputTextStyle,
                       ),                 
-                      EdgeInsets.only(left: 16.0),
-                      Icon(
-                        Icons.folder,
-                        style: iconTextStyle,
-                      ),
+                      Padding(
+                      EdgeInsets.only(right: 16.0),
+                      Icon(Icons.Search, style: iconTextStyle),
+                      ), 
                     ],
                   ),
                 ),
