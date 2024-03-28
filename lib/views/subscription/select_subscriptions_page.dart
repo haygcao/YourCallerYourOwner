@@ -50,16 +50,22 @@ class _SelectSubscriptionsPageState extends State<SelectSubscriptionsPage> {
                 ],
               ),
               // 选项卡
-              TabBar(
-                tabs: <Widget>[
-                  Tab(text: '全部'),
-                  Tab(text: '白名单'),
-                  Tab(text: '黑名单'),
-                ],
-              ),
+            TabBar(
+              labelStyle: SubscriptionPageStyles.tabLabelStyle,
+              labelColor: SubscriptionPageStyles.selectedTabLabelColor,
+              unselectedLabelColor: SubscriptionPageStyles.unselectedTabLabelColor,
+              indicatorColor: Colors.transparent, // Remove default indicator
+              padding: SubscriptionPageStyles.tabBarPadding,
+              tabs: <Widget>[
+                Tab(text: '全部'),
+                Tab(text: '白名单'),
+                Tab(text: '黑名单'),
+              ],
+            ),
 
               // Tab bar view
               TabBarView(
+                padding: SubscriptionPageStyles.tabViewPadding, 
                 children: <Widget>[
                   // All
                   ListView.builder(
@@ -73,7 +79,12 @@ class _SelectSubscriptionsPageState extends State<SelectSubscriptionsPage> {
                             subscription.isSelected = value!;
                           });
                         },
-                        title: Text(subscription.name),
+      title: Text(
+        subscription.name,
+        style: SubscriptionPageStyles.checkboxListTileTextStyle,
+      ),
+      activeColor: SubscriptionPageStyles.checkboxListTileActiveColor, // Use defined colors
+      inactiveColor: SubscriptionPageStyles.checkboxListTileInactiveColor,
                       );
                     },
                   ),
@@ -91,7 +102,12 @@ class _SelectSubscriptionsPageState extends State<SelectSubscriptionsPage> {
                               subscription.isSelected = value!;
                             });
                           },
-                          title: Text(subscription.name),
+      title: Text(
+        subscription.name,
+        style: SubscriptionPageStyles.checkboxListTileTextStyle,
+      ),
+      activeColor: SubscriptionPageStyles.checkboxListTileActiveColor, // Use defined colors
+      inactiveColor: SubscriptionPageStyles.checkboxListTileInactiveColor,
                         );
                       }
                       return Container();
@@ -111,7 +127,12 @@ class _SelectSubscriptionsPageState extends State<SelectSubscriptionsPage> {
                               subscription.isSelected = value!;
                             });
                           },
-                          title: Text(subscription.name),
+       title: Text(
+        subscription.name,
+        style: SubscriptionPageStyles.checkboxListTileTextStyle,
+      ),
+      activeColor: SubscriptionPageStyles.checkboxListTileActiveColor, // Use defined colors
+      inactiveColor: SubscriptionPageStyles.checkboxListTileInactiveColor,
                         );
                       }
                       return Container();
