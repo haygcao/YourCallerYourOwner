@@ -41,18 +41,12 @@ final TextStyle shieldSwitchTextStyle = TextStyle(
 );
   
 // 打开本地文件夹按钮的样式
-final ButtonStyle openLocalFolderButtonStyle = ButtonStyle(
-  foregroundColor: MaterialStateProperty.all(Colors.blue),
-  backgroundColor: MaterialStateProperty.all(Colors.white),
-  shape: MaterialStateProperty.all(
-    RoundedRectangleBorder(
-      side: BorderSide(
-        color: Colors.grey,
-        width: 1.0,
-      ),
-      borderRadius: BorderRadius.all(Radius.circular(4.0)),
-    ),
-  ),
+// 定义图标样式
+final TextStyle iconTextStyle = TextStyle(
+  // 字体大小
+  fontSize: 24.0,
+  // 字体颜色
+  color: Colors.blue,
 );
   
   // 添加按钮的样式
