@@ -70,6 +70,13 @@ final ButtonStyle openLocalFolderButtonStyle = ButtonStyle(
 final ButtonStyle addButtonStyle = ButtonStyle(
   backgroundColor: MaterialStateProperty.all(Colors.blue),
   foregroundColor: MaterialStateProperty.all(Colors.white),
+  shape: MaterialStateProperty.all(
+    RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+  ),
+  minimumSize: MaterialStateProperty.all(Size(150.0, 50.0)),
+  maximumSize: MaterialStateProperty.all(Size(200.0, 75.0)),
 );
   
 class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
