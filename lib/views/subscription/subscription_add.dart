@@ -52,18 +52,9 @@ final TextStyle shieldSwitchTextStyle = TextStyle(
 );
   
 // 打开本地文件夹按钮的样式
-final ButtonStyle openLocalFolderButtonStyle = ButtonStyle(
-  foregroundColor: MaterialStateProperty.all(Colors.blue),
-  backgroundColor: MaterialStateProperty.all(Colors.white),
-  shape: MaterialStateProperty.all(
-    RoundedRectangleBorder(
-      side: BorderSide(
-        color: Colors.grey,
-        width: 1.0,
-      ),
-      borderRadius: BorderRadius.all(Radius.circular(4.0)),
-    ),
-  ),
+final TextStyle shieldSwitchTextStyle = TextStyle(
+  fontSize: 16.0,
+  color: Colors.black,
 );
   
   // 添加按钮的样式
@@ -129,54 +120,50 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
               
 
               // 打开本地文件夹
-              SizedBox(height: 16.0),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      children: <Widget>[
-                        // 使用 EdgeInsets.only() 设置图标按钮居左
-                        IconButton(
-                          icon: Icon(Icons.folder),
-                          onPressed: () async {
-                            // 打开本地文件夹
-                            FilePickerResult? result = await FilePicker.platform.pickFiles(
-                              type: FileType.any,
-                            );
+GestureDetector(
+  child: Container(
+    decoration: inputBoxDecoration,
+    child: Row(
+      children: <Widget>[
+        // 设置图标位置
+        EdgeInsets.only(left: 16.0),
+        Icon(
+          Icons.folder,
+          style: iconTextStyle,
+        ),
+        // 设置文字间距
+        SizedBox(width: 16.0),
+        Text(
+          '打开本地文件夹',
+          style: inputTextStyle,
+        ),
+      ],
+    ),
+  ),
+  // 设置点击区域为整个容器区域
+  hitTestBehavior: HitTestBehavior.opaque,
+  onTap: () async {
+    // 打开本地文件夹
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+    );
 
-                            // 检查用户是否选择了文件
-                            if (result != null && result.files.single != null) {
-                              String filePath = result.files.single.path;
+    // 检查用户是否选择了文件
+    if (result != null && result.files.single != null) {
+      String filePath = result.files.single.path;
 
-                              // 根据文件类型解析数据
+      // 根据文件类型解析数据
 
-                              if (_isCsvFile(filePath)) {
-                                importSubscriptionsFromFile(filePath);
-                              } else if (_isJsonFile(filePath)) {
-                                importSubscriptionsFromFile(filePath);
-                              } else {
-                                throw Exception('Invalid file format');
-                              }
-                            }
-                          },
-                          padding: EdgeInsets.only(left: 0.0),
-                          iconButtonStyle: openLocalFolderButtonStyle,
-                        ),
-                        Expanded(
-                          child: TextField(
-                            enabled: false,
-                            decoration: InputDecoration(
-                              labelText: '本地文件夹',
-                              style: inputTextStyle,
-                              decoration: inputBoxDecoration,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+      if (_isCsvFile(filePath)) {
+        importSubscriptionsFromFile(filePath);
+      } else if (_isJsonFile(filePath)) {
+        importSubscriptionsFromFile(filePath);
+      } else {
+        throw Exception('Invalid file format');
+      }
+    }
+  },
+),
               SizedBox(height: 16.0),              
               // 白名单和黑名单
               Column(
