@@ -66,16 +66,16 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
                 child: Container(
                   decoration: inputBoxDecoration,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
+                      Text(
+                        '打开本地文件夹',
+                        style: inputTextStyle,
+                      ),                 
                       EdgeInsets.only(left: 16.0),
                       Icon(
                         Icons.folder,
                         style: iconTextStyle,
-                      ),
-                      SizedBox(width: 16.0),
-                      Text(
-                        '打开本地文件夹',
-                        style: inputTextStyle,
                       ),
                     ],
                   ),
