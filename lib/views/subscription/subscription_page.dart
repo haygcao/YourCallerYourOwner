@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lib/widgets/custom_app_bar.dart'; // Assuming path to your custom app bar
-import 'package:lib/utils/create_card.dart'; // Assuming path to your card creation function
-import 'package:lib/service/subscription_service.dart'; 
+import 'package:widgets/custom_app_bar.dart'; // Assuming path to your custom app bar
+import 'package:utils/create_card.dart'; // Assuming path to your card creation function
+import 'package:service/subscription_service.dart'; 
 import 'package:views/switch_style.dart'; 
 import 'package:views/shield_switch_style.dart'; 
-
+import 'package:views/Custom3ButtonStyle.dart';
 void main() {
   runApp(MyApp());
 }
@@ -45,30 +45,7 @@ class MyApp extends StatelessWidget {
                     },
                     icon: Icon(MaterialCommunityIcons.upload),
                     label: Text('Export'),
-                    style: ElevatedButton.styleFrom(
-                      primary: MaterialStateProperty.all<Color>(Colors.blue),
-                      onPrimary: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.hovered)) {
-                            return Colors.blue[700]; // Slightly darker on hover
-                          } else if (states.contains(MaterialState.pressed)) {
-                            return Colors.blue[800]; // Even darker on press
-                          }
-                          return Colors.white; // Default text color
-                        },
-                      ),
-                      shape: MaterialStateProperty.all<OutlinedBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      textStyle: MaterialStateProperty.all<TextStyle>(
-                        TextStyle(fontSize: 16.0),
-                      ),
-                      iconTheme: MaterialStateProperty.all<IconThemeData>(
-                        IconThemeData(size: 20.0),
-                      ),
-                    ),
+                    style: Custom3ButtonStyle.style, // Apply the extracted style
                   ),
 
                   // Add button (similar structure with optional MaterialStateProperty)
@@ -83,24 +60,7 @@ class MyApp extends StatelessWidget {
                     },
                     icon: Icon(FontAwesome.plus),
                     label: Text('Add'),
-                    style: ElevatedButton.styleFrom(
-                      primary: MaterialStateProperty.all<Color>(Colors.blue),
-                      onPrimary: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.hovered)) {
-                            return Colors.blue[700]; // Slightly darker on hover
-                          } else if (states.contains(MaterialState.pressed)) {
-                            return Colors.blue[800]; // Even darker on press
-                          }
-                          return Colors.white; // Default text color
-                        },
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      textStyle: TextStyle(fontSize: 16.0),
-                      iconTheme: IconThemeData(size: 20.0),
-                    ),
+                    style: Custom3ButtonStyle.style, // Apply the extracted style
                   ),
 
                   // Import button (similar structure with optional MaterialStateProperty)
@@ -115,24 +75,7 @@ class MyApp extends StatelessWidget {
                     },
                     icon: Icon(MaterialCommunityIcons.download),
                     label: Text('Import'),
-                    style: ElevatedButton.styleFrom(
-                      primary: MaterialStateProperty.all<Color>(Colors.blue),
-                      onPrimary: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.hovered)) {
-                            return Colors.blue[700]; // Slightly darker on hover
-                          } else if (states.contains(MaterialState.pressed)) {
-                            return Colors.blue[800]; // Even darker on press
-                          }
-                          return Colors.white; // Default text color
-                        },
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      textStyle: TextStyle(fontSize: 16.0),
-                      iconTheme: IconThemeData(size: 20.0),
-                    ),
+                    style: Custom3ButtonStyle.style, // Apply the extracted style
                   ),
                 ],
               ),
