@@ -55,18 +55,16 @@ class _ImportSubscriptionsPageState extends State<ImportSubscriptionsPage> {
                 child: Container(
                   decoration: inputBoxDecoration,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      // 设置图标位置
+                      Text(
+                        '打开本地文件夹',
+                        style: inputTextStyle,
+                      ),                 
                       EdgeInsets.only(left: 16.0),
                       Icon(
                         Icons.folder,
                         style: iconTextStyle,
-                      ),
-                      // 设置文字间距
-                      SizedBox(width: 16.0),
-                      Text(
-                        '打开本地文件夹',
-                        style: inputTextStyle,
                       ),
                     ],
                   ),
