@@ -52,9 +52,11 @@ class _ExportSubscriptionsPageState extends State<ExportSubscriptionsPage> {
                       Text(
                         'Select subscriptions to export',
                         style: inputTextStyle,
-                      ),                      
-                      EdgeInsets.only(left: 16.0),
+                      ),
+                      Padding(
+                      EdgeInsets.only(right: 16.0),
                       Icon(Icons.Search, style: iconTextStyle),
+                      ),  
                      ],
                   ),
                 ),
@@ -91,8 +93,10 @@ class _ExportSubscriptionsPageState extends State<ExportSubscriptionsPage> {
                         _filePath ?? 'selecting export folder',
                         style: inputTextStyle,
                       ),                      
-                      EdgeInsets.only(left: 16.0),
-                      Icon(Icons.folder, style: iconTextStyle),
+                      Padding(
+                      EdgeInsets.only(right: 16.0),
+                      Icon(Icons.Search, style: iconTextStyle),
+                      ), 
                     ],
                   ),
                 ),
