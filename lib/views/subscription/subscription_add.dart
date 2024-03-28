@@ -169,21 +169,13 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
 onPressed: () {
   // 检查订阅名称是否为空
   if (_subscriptionNameController.text.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('订阅名称不能为空'),
-      ),
-    );
+    showInputErrorSnackBar(context, "订阅名称不能为空");
     return;
   }
 
   // 检查 URL 和本地文件
   if (_urlController.text.isEmpty && result == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('请选择文件或输入 URL'),
-      ),
-    );
+    showInputErrorSnackBar(context, "请选择文件或输入 URL");
     return;
   }
 
@@ -198,11 +190,7 @@ onPressed: () {
 
   // 检查 URL 是否正确
   if (!isUrlValid(_urlController.text)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('URL 格式不正确'),
-      ),
-    );
+    showInputErrorSnackBar(context, "URL 格式不正确");
     return;
   }
 
