@@ -81,4 +81,13 @@ class SubscriptionPageStyles {
 
   static const EdgeInsets tabBarPadding = EdgeInsets.symmetric(horizontal: 16.0);
   static const EdgeInsets tabViewPadding = EdgeInsets.all(16.0);
+
+  static const TextStyle checkboxListTileTextStyle = TextStyle(
+    fontSize: 16.0,
+    color: Colors.black,
+  );
+
+  static const Color checkboxListTileActiveColor = Colors.blue; // Color for selected checkbox
+  static const Color checkboxListTileInactiveColor = Colors.grey; // Color for unselected checkbox
+}
 }
