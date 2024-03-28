@@ -3,6 +3,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:view/shield_switch_style.dart';
 import 'package:view/subpage_style.dart';
 import 'package:service/subscription_service.dart';
+import 'package:services/snackbar_service.dart';
+
 class AddSubscriptionPage extends StatefulWidget {
   @override
   _AddSubscriptionPageState createState() => _AddSubscriptionPageState();
@@ -169,13 +171,20 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
 onPressed: () {
   // 检查订阅名称是否为空
   if (_subscriptionNameController.text.isEmpty) {
-    showInputErrorSnackBar(context, "订阅名称不能为空");
+    showErrorSnackBar(context, "订阅名称不能为空");
     return;
   }
 
   // 检查 URL 和本地文件
-  if (_urlController.text.isEmpty && result == null) {
-    showInputErrorSnackBar(context, "请选择文件或输入 URL");
+  if (_urlController.text.isNotEmpty) {
+    // 检查 URL 是否正确
+    if (!isUrlValid(_urlController.text)) {
+      showErrorSnackBar(context, "URL 格式不正确");
+      return;
+    }
+  } else if (result == null) {
+    // 提示用户二选一
+    showErrorSnackBar(context, "请选择文件或输入 URL");
     return;
   }
 
@@ -188,11 +197,6 @@ onPressed: () {
     addSubscriptionToWhitelist(Subscription());
   }
 
-  // 检查 URL 是否正确
-  if (!isUrlValid(_urlController.text)) {
-    showInputErrorSnackBar(context, "URL 格式不正确");
-    return;
-  }
 
   // 导入订阅
   if (_urlController.text.isNotEmpty) {
