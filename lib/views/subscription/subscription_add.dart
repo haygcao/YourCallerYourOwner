@@ -166,29 +166,56 @@ class _AddSubscriptionPageState extends State<AddSubscriptionPage> {
               SizedBox(height: 16.0),
               ElevatedButton(
                 child: Text('添加'),
-                onPressed: () {
-                      // 检查订阅名称和订阅链接是否有效
+onPressed: () {
+  // 检查订阅名称是否为空
+  if (_subscriptionNameController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('订阅名称不能为空'),
+      ),
+    );
+    return;
+  }
 
-                    if (_subscriptionNameController.text.isEmpty) {
-                      return;
-                    }
+  // 检查 URL 和本地文件
+  if (_urlController.text.isEmpty && result == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('请选择文件或输入 URL'),
+      ),
+    );
+    return;
+  }
 
-                   if (_urlController.text.isEmpty) {
-                    return;
-                   }
-                  // 添加订阅
-                  addSubscriptionName(Subscription(), _subscriptionNameController.text);
+  // 添加订阅
+  addSubscriptionName(Subscription(), _subscriptionNameController.text);
 
-                  if (_isBlacklist) {
-                    addSubscriptionToBlacklist(Subscription());
-                  } else if (_isWhitelist) {
-                    addSubscriptionToWhitelist(Subscription());
-                  }
+  if (_isBlacklist) {
+    addSubscriptionToBlacklist(Subscription());
+  } else if (_isWhitelist) {
+    addSubscriptionToWhitelist(Subscription());
+  }
 
-                  importSubscriptionsFromUrl(_urlController.text);
-                },
+  // 检查 URL 是否正确
+  if (!isUrlValid(_urlController.text)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('URL 格式不正确'),
+      ),
+    );
+    return;
+  }
+
+  // 导入订阅
+  if (_urlController.text.isNotEmpty) {
+    importSubscriptionsFromUrl(_urlController.text);
+  } else {
+    importSubscriptionsFromFile(result.files.single.path);
+  }
+},
                 style: addButtonStyle,
               ),
+              
             ],
           ),
         ),
